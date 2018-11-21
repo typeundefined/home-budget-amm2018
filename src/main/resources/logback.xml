@@ -11,18 +11,28 @@
     </appender>
 
     <root level="info">
-        <appender-ref ref="Console" />
+        <appender-ref ref="Console"/>
     </root>
 
     <logger name="dsr.amm" level="trace" additivity="false">
-        <appender-ref ref="Console" />
+        <appender-ref ref="Console"/>
     </logger>
 
     <logger name="org.springframework" level="info" additivity="false">
-        <appender-ref ref="Console" />
+        <appender-ref ref="Console"/>
     </logger>
     <logger name="org.springframework.orm.jpa" level="debug" additivity="false">
-        <appender-ref ref="Console" />
+        <appender-ref ref="Console"/>
     </logger>
 
+    <logger name="org.hibernate" level="debug" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.hibernate.SQL" level="trace" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="org.hibernate.type" level="trace" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
 </configuration>
