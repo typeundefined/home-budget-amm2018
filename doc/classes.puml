@@ -1,0 +1,13 @@
+@startuml
+skinparam defaultFontName Ubuntu
+
+Account o-- Currency
+Transaction o-- Currency
+
+Transaction <|-- DepositTx
+Transaction <|-- WithdrawalTx
+
+Transaction "n" o--- "1" Account: src
+
+Person *-up- "n" Account
+@enduml

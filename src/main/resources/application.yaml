@@ -1,0 +1,9 @@
+server:
+  port: 8085
+spring:
+  jpa.open-in-view: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/home-budget
+    username: user
+    password: myPass
+    driver-class-name: org.postgresql.Driver
