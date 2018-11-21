@@ -1,0 +1,5 @@
+Base project structure - overview
+REST principles
+Domain classes structure
+Entities and repositories
+Orika MAPPER
