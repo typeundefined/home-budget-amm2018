@@ -1,13 +1,18 @@
 @startuml
 skinparam defaultFontName Ubuntu
 
-Account o-- Currency
+Account o-right- Currency
 Transaction o-- Currency
+Transaction o-- "1" Category
+Transaction o-- "n" Tag
 
-Transaction <|-- DepositTx
-Transaction <|-- WithdrawalTx
+Transaction <|-right- DepositTx
+Transaction <|-up- WithdrawalTx
 
 Transaction "n" o--- "1" Account: src
 
 Person *-up- "n" Account
+Person *-right-- "n" Category
+Person *-- "n" Tag
+
 @enduml
