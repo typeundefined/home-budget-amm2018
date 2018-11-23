@@ -1,17 +1,19 @@
 package dsr.amm.homebudget.data.entity;
 
-import org.hibernate.validator.constraints.Length;
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+/**
+ * Created by knekrasov on 10/15/2018.
+ */
 @Entity
 public class Currency {
     @Id
-    @Length(max = 3)
+    @Column(length = 3)
     private String code;
 
-    @Length(max = 40)
+    @Column(length = 40)
     private String humanReadableName;
 
     public String getCode() {
