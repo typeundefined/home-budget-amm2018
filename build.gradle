@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
 	compile 'org.postgresql:postgresql:42.1.1'
+	compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.2'
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 	implementation('org.springframework.boot:spring-boot-starter-security')
 	implementation('org.springframework.boot:spring-boot-starter-web')
