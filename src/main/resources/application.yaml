@@ -1,7 +1,10 @@
 server:
   port: 8085
 spring:
-  jpa.open-in-view: false
+  jpa:
+    open-in-view: false
+    generate-ddl: true # Whether to initialize the schema on startup.
+    hibernate.ddl-auto: update
   datasource:
     url: jdbc:postgresql://localhost:5432/home-budget
     username: user
