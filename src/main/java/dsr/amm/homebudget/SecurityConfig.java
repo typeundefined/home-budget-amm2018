@@ -12,6 +12,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // TODO [KN] setup a proper authorization rules afterwards
-        http.antMatcher("/**").anonymous();
+        http.antMatcher("/**").anonymous().and().csrf().disable();
     }
 }
