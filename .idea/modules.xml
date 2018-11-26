@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/home-budget.iml" filepath="$PROJECT_DIR$/home-budget.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/home-budget_main.iml" filepath="$PROJECT_DIR$/.idea/modules/home-budget_main.iml" group="home-budget" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/home-budget_test.iml" filepath="$PROJECT_DIR$/.idea/modules/home-budget_test.iml" group="home-budget" />
+    </modules>
+  </component>
+</project>
