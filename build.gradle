@@ -31,4 +31,5 @@ dependencies {
 	runtimeOnly('org.postgresql:postgresql')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.security:spring-security-test')
+	compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.2'
 }
