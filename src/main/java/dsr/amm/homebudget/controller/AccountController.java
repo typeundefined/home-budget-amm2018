@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Created by knekrasov on 10/15/2018.
  */
+
 @RestController
 @RequestMapping("/account")
 public class AccountController {
