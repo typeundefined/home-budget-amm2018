@@ -1,9 +1,14 @@
 package dsr.amm.homebudget.controller;
 
 import dsr.amm.homebudget.data.dto.AccountDTO;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import dsr.amm.homebudget.data.dto.AccountNewDTO;
+import dsr.amm.homebudget.service.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created by knekrasov on 10/15/2018.
@@ -11,11 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/account")
 public class AccountController {
+    @Autowired
+    private AccountService accountService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public AccountDTO getCurrent() {
-        AccountDTO dto = new AccountDTO();
-        dto.setAmount(140d);
-        return dto;
+    public List<AccountDTO> getCurrent() {
+        return accountService.getMyAccounts();
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountDTO createAccount(@Valid @RequestBody AccountNewDTO newAcc) {
+        return accountService.create(newAcc);
     }
 }
