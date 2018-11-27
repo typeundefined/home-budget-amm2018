@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 /**
  * Created by knekrasov on 10/15/2018.
  */
+
 @Entity
 public class Account {
     @Id

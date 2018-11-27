@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 /**
  * Created by knekrasov on 10/24/2018.
  */
+
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 public class Person {

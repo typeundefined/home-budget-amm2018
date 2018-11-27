@@ -35,7 +35,7 @@ public class CategoryService {
 
     // Delete category method
     @Transactional
-    public void delete(CategoryDTO cat) {
-        repository.save(mapper.map(cat, Category.class));
+    public void delete(long id) {
+        //repository.deleteById(id);
     }
 }

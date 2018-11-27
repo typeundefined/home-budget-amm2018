@@ -35,7 +35,7 @@ public class AccountService {
 
     // Delete account method
     @Transactional
-    public void delete(AccountDTO curr) {
-        repository.delete(mapper.map(curr, Account.class));
+    public void delete(long id) {
+        //repository.deleteById(id);
     }
 }

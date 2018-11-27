@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 /**
  * Created by knekrasov on 10/23/2018.
  */
+
 @Entity
 public class DepositTx extends Transaction {
     private BigDecimal amount;

@@ -4,10 +4,7 @@ package dsr.amm.homebudget.controller;
 import dsr.amm.homebudget.data.dto.AccountDTO;
 import dsr.amm.homebudget.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -37,8 +34,9 @@ public class AccountController {
     }
 
     // Delete account
+    @GetMapping("/account/{id}")
     @RequestMapping(method = RequestMethod.DELETE)
-    public void deleteCurrency(@RequestBody @Valid AccountDTO acc) {
-        service.delete(acc);
+    public void deleteCurrency(@PathVariable long id) {
+        service.delete(id);
     }
 }

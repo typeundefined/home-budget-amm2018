@@ -14,6 +14,7 @@ import java.util.Set;
 /**
  * Created by knekrasov on 10/15/2018.
  */
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class Transaction {

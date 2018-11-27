@@ -6,6 +6,7 @@ import dsr.amm.homebudget.data.entity.Currency;
 import dsr.amm.homebudget.data.repository.CurrencyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -35,7 +36,7 @@ public class CurrencyService {
 
     // Delete currency method
     @Transactional
-    public void delete(CurrencyDTO curr) {
-        repository.delete(mapper.map(curr, Currency.class));
+    public void delete(@PathVariable long id) {
+        //repository.deleteById(id);
     }
 }

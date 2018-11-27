@@ -1,9 +1,6 @@
 package dsr.amm.homebudget.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,8 +31,9 @@ public class CurrencyController {
     }
 
     // Delete currency
+    @GetMapping("/currency/{id}")
     @RequestMapping(method = RequestMethod.DELETE)
-    public void deleteCurrency(@RequestBody @Valid CurrencyDTO curr) {
-        service.delete(curr);
+    public void deleteCurrency(@PathVariable long id) {
+        service.delete(id);
     }
 }
