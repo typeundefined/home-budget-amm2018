@@ -1,9 +1,10 @@
 Discuss:
   REST principles
   Layered structure of the application (controllers, services, DAO)
+  Account creation
 
 Code:
-  Account creation
+  Exception handling within Controllers
   Add transaction. JSON mapping: trick with inheritance
   User registration
   Session-based authentication
