@@ -2,6 +2,7 @@ package dsr.amm.homebudget.data.dto;
 
 import javax.validation.constraints.NotNull;
 
+// Currency data transfer object
 public class CurrencyDTO {
     private String code;
 

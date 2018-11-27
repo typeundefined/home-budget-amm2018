@@ -13,6 +13,7 @@ import dsr.amm.homebudget.service.CategoryService;
 import javax.validation.Valid;
 import java.util.List;
 
+// Category controller
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
@@ -20,18 +21,21 @@ public class CategoryController {
     @Autowired
     private CategoryService service;
 
+    // Get category
     @RequestMapping(method = RequestMethod.GET)
-    public List<CategoryDTO> getAll() {
+    public List<CategoryDTO> getCategory() {
         return service.getCategories();
     }
 
+    // Post category
     @RequestMapping(method = RequestMethod.POST)
-    public void postCat(@RequestBody @Valid CategoryDTO cat) {
+    public void createCategory(@RequestBody @Valid CategoryDTO cat) {
         service.create(cat);
     }
 
+    // Delete category
     @RequestMapping(method = RequestMethod.DELETE)
-    public void delCat(@RequestBody @Valid CategoryDTO cat) {
+    public void deleteCategory(@RequestBody @Valid CategoryDTO cat) {
         service.delete(cat);
     }
 }
