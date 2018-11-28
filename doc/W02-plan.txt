@@ -1,4 +1,7 @@
 Discuss:
+  git:
+    -- gitignore
+    -- Github: how to fork a repo
   REST principles
   Layered structure of the application (controllers, services, DAO)
   Account creation
