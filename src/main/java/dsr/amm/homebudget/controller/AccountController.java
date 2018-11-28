@@ -36,7 +36,7 @@ public class AccountController {
     // Delete account
     @GetMapping("/account/{id}")
     @RequestMapping(method = RequestMethod.DELETE)
-    public void deleteCurrency(@PathVariable long id) {
+    public void deleteCurrency(@PathVariable String id) {
         service.delete(id);
     }
 }

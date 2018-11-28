@@ -36,7 +36,7 @@ public class CurrencyService {
 
     // Delete currency method
     @Transactional
-    public void delete(@PathVariable long id) {
-        //repository.deleteById(id);
+    public void delete(String id) {
+        repository.deleteById(id);
     }
 }

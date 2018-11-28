@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 // Category repository
 @Repository
 public interface CategoryRepository extends CrudRepository<Category, String> {
-
 }

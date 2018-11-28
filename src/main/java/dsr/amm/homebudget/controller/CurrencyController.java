@@ -33,7 +33,7 @@ public class CurrencyController {
     // Delete currency
     @GetMapping("/currency/{id}")
     @RequestMapping(method = RequestMethod.DELETE)
-    public void deleteCurrency(@PathVariable long id) {
+    public void deleteCurrency(@PathVariable String id) {
         service.delete(id);
     }
 }

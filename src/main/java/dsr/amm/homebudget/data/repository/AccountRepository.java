@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 // Account repository
 @Repository
 public interface AccountRepository extends CrudRepository<Account, String> {
-
 }

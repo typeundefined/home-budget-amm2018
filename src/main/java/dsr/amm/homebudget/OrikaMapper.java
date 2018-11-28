@@ -6,5 +6,4 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 // Orica mapper
 @Component
 public class OrikaMapper extends ConfigurableMapper {
-
 }
