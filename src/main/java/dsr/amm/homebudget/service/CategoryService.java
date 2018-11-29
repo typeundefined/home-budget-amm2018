@@ -1,7 +1,6 @@
 package dsr.amm.homebudget.service;
 
 import dsr.amm.homebudget.OrikaMapper;
-import dsr.amm.homebudget.data.dto.CategoryDTO;
 import dsr.amm.homebudget.data.entity.Category;
 import dsr.amm.homebudget.data.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +23,14 @@ public class CategoryService {
     private OrikaMapper mapper;
 
     @Transactional
-    public List<CategoryDTO> getCategories() {
+    public List<Category> getCategories() {
         Iterable<Category> p = repository.findAll();
-        return mapper.mapAsList(p, CategoryDTO.class);
+        return mapper.mapAsList(p, Category.class);
     }
 
 
     @Transactional
-    public void create(CategoryDTO cater) {
+    public void create(Category cater) {
 
         repository.save(mapper.map(cater, Category.class));
     }
