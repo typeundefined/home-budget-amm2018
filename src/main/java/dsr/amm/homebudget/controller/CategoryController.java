@@ -24,4 +24,9 @@ public class CategoryController {
     void createOne(@RequestBody @Valid CategoryDTO category) {
         service.create(category);
     }
+
+    @RequestMapping(value="/{id}", method = RequestMethod.DELETE)
+    void deleteOne(@PathVariable("id") long categoryId) {
+        service.removeById(categoryId);
+    }
 }
