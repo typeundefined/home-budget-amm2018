@@ -24,7 +24,7 @@ public class CurrencyController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public void getAll(@RequestBody @Valid CurrencyDTO curr) {
+    public void create(@RequestBody @Valid CurrencyDTO curr) {
         service.create(curr);
     }
 }
