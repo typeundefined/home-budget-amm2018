@@ -6,7 +6,7 @@ spring:
     generate-ddl: true # Whether to initialize the schema on startup.
     hibernate.ddl-auto: update
   datasource:
-    url: jdbc:postgresql://localhost:5432/home-budget
-    username: user
-    password: myPass
+    url: jdbc:postgresql://localhost:5432/homebudget
+    username: myuser
+    password: qwerty
     driver-class-name: org.postgresql.Driver
