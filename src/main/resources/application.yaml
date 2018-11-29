@@ -7,6 +7,6 @@ spring:
     hibernate.ddl-auto: update
   datasource:
     url: jdbc:postgresql://localhost:5432/home-budget
-    username: user
-    password: myPass
+    username: postgres
+    password: gogogo32
     driver-class-name: org.postgresql.Driver
