@@ -1,19 +1,8 @@
-package dsr.amm.homebudget.data.entity;
+package dsr.amm.homebudget.data.dto;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "categories")
-public class WithdrawalCategory {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CategoryDTO {
     private Long id;
-
-    @Column(nullable=false)
-    private Long userId;
-
-    @Column(nullable=false)
+    private Long owner;
     private String name;
     private String description;
 
@@ -23,6 +12,14 @@ public class WithdrawalCategory {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Long owner) {
+        this.owner = owner;
     }
 
     public String getName() {
@@ -39,13 +36,5 @@ public class WithdrawalCategory {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 }
