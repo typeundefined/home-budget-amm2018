@@ -1,0 +1,14 @@
+version: '3.6'
+
+services:
+
+  home-budget-pg:
+    container_name: home-budget-pg
+    image: "postgres:9.6.5"
+    ports:
+      - "5432:5432"
+    environment:
+      TZ: Europe/Moscow
+      POSTGRES_PASSWORD: myPass
+      POSTGRES_USER: user
+      POSTGRES_DB: home-budget
