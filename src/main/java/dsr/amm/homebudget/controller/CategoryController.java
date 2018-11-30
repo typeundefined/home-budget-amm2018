@@ -12,24 +12,25 @@ import java.util.List;
  * Created by rifia on 11/29/2018.
  */
 
-@RestController("/")
+@RestController
+@RequestMapping("/category")
 public class CategoryController {
 
     @Autowired
     private CategoryService service;
 
-    @RequestMapping(value = "/category", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public List<Category> getAll() {
         return service.getCategories();
     }
 
-    @RequestMapping(value = "/category", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public void create(@RequestBody @Valid Category curr) {
         service.create(curr);
     }
 
 
-    @RequestMapping(value = "/category/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") Long id) {
         service.delete(id);
     }
