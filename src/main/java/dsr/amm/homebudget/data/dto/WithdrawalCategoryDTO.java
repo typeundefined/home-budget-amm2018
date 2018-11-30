@@ -6,15 +6,6 @@ public class WithdrawalCategoryDTO {
     private String name;
     private String description;
 
-    public WithdrawalCategoryDTO() {}
-
-    public WithdrawalCategoryDTO(Long id, Long userId, String name, String description) {
-        this.id = id;
-        this.userId = userId;
-        this.name = name;
-        this.description = description;
-    }
-
     public Long getId() {
         return id;
     }

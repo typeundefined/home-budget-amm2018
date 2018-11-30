@@ -1,9 +1,13 @@
 package dsr.amm.homebudget.service;
 
+import dsr.amm.homebudget.OrikaMapper;
+import dsr.amm.homebudget.data.dto.WithdrawalCategoryDTO;
 import dsr.amm.homebudget.data.entity.WithdrawalCategory;
 import dsr.amm.homebudget.data.repository.WithdrawalCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class WithdrawalCategoryService {
@@ -11,18 +15,22 @@ public class WithdrawalCategoryService {
     @Autowired
     WithdrawalCategoryRepository repository;
 
-    public WithdrawalCategory save(WithdrawalCategory category) {
-        return repository.save(category);
+    @Autowired
+    private OrikaMapper mapper;
+
+    public WithdrawalCategoryDTO save(WithdrawalCategoryDTO category) {
+        return mapper.map(repository.save(mapper.map(category, WithdrawalCategory.class)), WithdrawalCategoryDTO.class);
     }
     public void delete(Long id) {
         repository.deleteById(id);
     }
 
-    public WithdrawalCategory getCategory(Long id) {
-        return repository.findWithdrawalCategoriesById(id);
+    public WithdrawalCategoryDTO getCategory(Long id) {
+        return mapper.map(repository.findWithdrawalCategoriesById(id), WithdrawalCategoryDTO.class);
     }
 
-    public Iterable<WithdrawalCategory> getAll() {
-        return repository.findAll();
+    public List<WithdrawalCategoryDTO> getAll() {
+        Iterable<WithdrawalCategory> accList = repository.findAll();
+        return mapper.mapAsList(accList, WithdrawalCategoryDTO.class);
     }
 }

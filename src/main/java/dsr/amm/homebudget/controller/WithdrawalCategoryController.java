@@ -23,11 +23,7 @@ public class WithdrawalCategoryController {
     @RequestMapping(method = RequestMethod.GET)
     public List<WithdrawalCategoryDTO> getAll() {
         List<WithdrawalCategoryDTO> categories = new ArrayList<>();
-
-        service.getAll().forEach(it ->
-                categories.add(new WithdrawalCategoryDTO(it.getId(), it.getUserId(), it.getName(), it.getDescription()))
-        );
-
+        service.getAll().forEach(categories::add);
         if (!categories.isEmpty())
             return categories;
         else
@@ -36,9 +32,9 @@ public class WithdrawalCategoryController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public WithdrawalCategoryDTO getCategory(@PathVariable("id") long id) {
-        WithdrawalCategory category = service.getCategory(id);
+        WithdrawalCategoryDTO category = service.getCategory(id);
         if (category != null)
-            return new WithdrawalCategoryDTO(category.getId(), category.getUserId(), category.getName(), category.getDescription());
+            return category;
         else
             throw new NotFoundException();
     }
@@ -46,7 +42,7 @@ public class WithdrawalCategoryController {
     @RequestMapping(method = RequestMethod.PUT)
     public WithdrawalCategoryDTO putCategory(@RequestBody @Valid WithdrawalCategoryDTO categoryDTO) {
         if (service.getCategory(categoryDTO.getId()) == null) {
-            return insertCategory(categoryDTO);
+            return service.save(categoryDTO);
         } else
             throw new EntityAlreadyExistException();
     }
@@ -54,7 +50,7 @@ public class WithdrawalCategoryController {
     @RequestMapping(method = RequestMethod.POST)
     public WithdrawalCategoryDTO postCategory(@RequestBody @Valid WithdrawalCategoryDTO categoryDTO) {
         if (service.getCategory(categoryDTO.getId()) != null) {
-            return insertCategory(categoryDTO);
+            return service.save(categoryDTO);
         } else
             throw new NotFoundException();
     }
@@ -62,15 +58,5 @@ public class WithdrawalCategoryController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void deleteOne(@PathVariable("id") long id) {
         service.delete(id);
-    }
-
-    private WithdrawalCategoryDTO insertCategory(WithdrawalCategoryDTO categoryDTO) {
-        WithdrawalCategory category = new WithdrawalCategory();
-        category.setId(categoryDTO.getId());
-        category.setName(categoryDTO.getName());
-        category.setUserId(categoryDTO.getUserId());
-        category.setDescription(categoryDTO.getDescription());
-        category = service.save(category);
-        return new WithdrawalCategoryDTO(category.getId(), category.getUserId(), category.getName(), category.getDescription());
     }
 }
