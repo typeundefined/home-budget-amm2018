@@ -1,5 +1,6 @@
 package dsr.amm.homebudget.controller;
 
+import dsr.amm.homebudget.data.dto.CategoryDTO;
 import dsr.amm.homebudget.data.entity.Category;
 import dsr.amm.homebudget.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,12 @@ public class CategoryController {
     private CategoryService service;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Category> getAll() {
+    public List<CategoryDTO> getAll() {
         return service.getCategories();
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public void create(@RequestBody @Valid Category curr) {
+    public void create(@RequestBody @Valid CategoryDTO curr) {
         service.create(curr);
     }
 
