@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // TODO [KN] setup a proper authorization rules afterwards
         http.authorizeRequests()
                 .mvcMatchers("/auth/**").anonymous()
-                .mvcMatchers("/**").authenticated()
+                .mvcMatchers("/**").anonymous() // TODO: authenticated()
                 .and().csrf().disable();
     }
 }
