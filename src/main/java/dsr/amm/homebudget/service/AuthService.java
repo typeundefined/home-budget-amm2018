@@ -9,10 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.time.OffsetDateTime;
+
+import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
 @Service
 public class AuthService {
@@ -32,8 +38,9 @@ public class AuthService {
     public void login(LoginDTO loginDTO) {
         UsernamePasswordAuthenticationToken token
                 = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
-        authenticationManager.authenticate(token);
-        // TODO: session registration
+        Authentication auth = authenticationManager.authenticate(token);
+        SecurityContext sc = SecurityContextHolder.getContext();
+        sc.setAuthentication(auth);
     }
 
     public void register(RegisterDTO registerDTO) {
