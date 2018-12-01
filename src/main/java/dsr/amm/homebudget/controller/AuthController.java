@@ -1,6 +1,7 @@
 package dsr.amm.homebudget.controller;
 
 import dsr.amm.homebudget.data.dto.LoginDTO;
+import dsr.amm.homebudget.data.dto.RegisterDTO;
 import dsr.amm.homebudget.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,11 @@ public class AuthController {
     @RequestMapping(path="/login", method = RequestMethod.POST)
     public void login(LoginDTO loginDTO) {
         authService.login(loginDTO);
+    }
+
+    @RequestMapping(path = "/register", method = RequestMethod.POST)
+    public void register(RegisterDTO registerDTO) {
+        authService.register(registerDTO);
     }
 
 }
