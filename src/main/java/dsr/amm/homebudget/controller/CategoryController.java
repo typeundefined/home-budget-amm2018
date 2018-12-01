@@ -23,7 +23,7 @@ public class CategoryController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public void getAll(@RequestBody @Valid CategoryDTO category) {
+    public void create(@RequestBody @Valid CategoryDTO category) {
         service.create(category);
     }
 }

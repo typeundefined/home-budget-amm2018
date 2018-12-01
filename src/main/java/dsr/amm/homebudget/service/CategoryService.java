@@ -24,7 +24,6 @@ public class CategoryService {
         return mapper.mapAsList(categoryList, CategoryDTO.class);
     }
 
-    //фигня какая-то
     @Transactional
     public void create(CategoryDTO category) {
         repository.save(mapper.map(category, Category.class));
