@@ -6,6 +6,7 @@ import dsr.amm.homebudget.data.dto.RegisterDTO;
 import dsr.amm.homebudget.data.entity.Person;
 import dsr.amm.homebudget.data.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,7 +41,7 @@ public class AuthService {
 
         repository.findByUsername(person.getUsername()).ifPresent(
                 existingPerson -> {
-                    throw new RuntimeException("This username is already in use");
+                    throw new AccessDeniedException("Username '" + person.getUsername() + "' is already in use");
                 }
         );
         person.setPassword(passwordEncoder.encode(person.getPassword()));
