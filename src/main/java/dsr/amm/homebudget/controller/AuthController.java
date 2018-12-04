@@ -29,9 +29,4 @@ public class AuthController {
         authService.register(registerDTO);
     }
 
-    @ExceptionHandler(UniqueConditionException.class)
-    public void uniqueConditionHandler(HttpServletResponse response, UniqueConditionException exception) throws IOException {
-        response.sendError(exception.getResponseCode(), exception.getMessage());
-    }
-
 }

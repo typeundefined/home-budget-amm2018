@@ -54,8 +54,7 @@ public class AuthService {
         }
         catch (DataIntegrityViolationException e) {
             throw new UniqueConditionException(
-                    "Username '" + person.getUsername() + "' is already in use",
-                    HttpServletResponse.SC_NOT_ACCEPTABLE
+                    "Username '" + person.getUsername() + "' is already in use"
             );
         }
     }

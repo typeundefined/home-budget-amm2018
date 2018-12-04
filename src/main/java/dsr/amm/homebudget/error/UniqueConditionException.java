@@ -1,15 +1,12 @@
 package dsr.amm.homebudget.error;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(code = HttpStatus.NOT_ACCEPTABLE)
 public class UniqueConditionException extends RuntimeException{
 
-    private int responseCode;
-
-    public UniqueConditionException(String msg, int responseCode) {
+    public UniqueConditionException(String msg) {
         super(msg);
-        this.responseCode = responseCode;
-    }
-
-    public int getResponseCode() {
-        return responseCode;
     }
 }
