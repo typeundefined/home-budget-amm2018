@@ -1,5 +1,6 @@
 package dsr.amm.homebudget.service;
 
+import dsr.amm.homebudget.OrikaMapper;
 import dsr.amm.homebudget.data.entity.Person;
 import dsr.amm.homebudget.data.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class PrincipalDetailsService implements UserDetailsService {
     @Autowired
     private PersonRepository repository;
+
+    @Autowired
+    private OrikaMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
