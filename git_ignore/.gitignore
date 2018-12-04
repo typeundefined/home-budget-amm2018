@@ -1,0 +1,7 @@
+*.md
+*.txt
+*.gradle
+*.bat
+/doc
+/out
+/gradle
