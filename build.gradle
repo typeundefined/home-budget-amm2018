@@ -26,14 +26,10 @@ repositories {
 dependencies {
 	compile 'org.postgresql:postgresql:42.1.1'
 	compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.2'
-    // https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
     compile('javax.xml.bind:jaxb-api:2.3.0')
-    // https://mvnrepository.com/artifact/org.hibernate/hibernate-entitymanager
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.3.7.Final'
-    // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
     compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.7.Final'
-	// https://mvnrepository.com/artifact/org.javassist/javassist
 	compile group: 'org.javassist', name: 'javassist', version: '3.15.0-GA'
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 	implementation('org.springframework.boot:spring-boot-starter-security')

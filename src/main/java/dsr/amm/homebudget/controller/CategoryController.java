@@ -1,5 +1,6 @@
 package dsr.amm.homebudget.controller;
 
+import dsr.amm.homebudget.data.dto.CategoryDTO;
 import dsr.amm.homebudget.data.dto.CurrencyDTO;
 import dsr.amm.homebudget.data.entity.Category;
 import dsr.amm.homebudget.service.CategoryService;
@@ -16,17 +17,17 @@ public class CategoryController {
         private CategoryService service;
 
         @RequestMapping(method = RequestMethod.GET)
-        public List<Category> getAll() {
+        public List<CategoryDTO> getAll() {
             return service.getCategory();
         }
 
         @RequestMapping(method = RequestMethod.POST)
-        public void getAll(@RequestBody @Valid Category category) {
+        public void getAll(@RequestBody @Valid CategoryDTO category) {
             service.create(category);
         }
 
         @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-        public void getAll(@PathVariable("id") Long id) {
+        public void delete(@PathVariable("id") Long id) {
         service.delete(id);
     }
 

@@ -19,6 +19,7 @@ public class AccountDTO {
 
     private BigDecimal currentValue;
 
+
     public Long getId() {
         return id;
     }

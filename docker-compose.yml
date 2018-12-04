@@ -6,9 +6,9 @@ services:
     container_name: home-budget-pg
     image: "postgres:9.6.5"
     ports:
-      - "5434:5434"
+      - "5434:5432"
     environment:
       TZ: Europe/Moscow
       POSTGRES_PASSWORD: myPass
-      POSTGRES_USER: userdo
+      POSTGRES_USER: user
       POSTGRES_DB: home-budget
