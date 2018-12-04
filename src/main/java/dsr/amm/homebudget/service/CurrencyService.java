@@ -25,7 +25,6 @@ public class CurrencyService {
         return mapper.mapAsList(t, CurrencyDTO.class);
     }
 
-
     @Transactional
     public void create(CurrencyDTO curr) {
         repository.save(mapper.map(curr, Currency.class));
