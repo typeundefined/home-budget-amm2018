@@ -18,7 +18,7 @@ public class Person {
 
     @NotNull
     @Length(min = 1, max = 40)
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @Length(max = 256)
