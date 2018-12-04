@@ -2,9 +2,9 @@ package dsr.amm.homebudget.controller;
 
 import dsr.amm.homebudget.data.dto.LoginDTO;
 import dsr.amm.homebudget.data.dto.RegisterDTO;
+import dsr.amm.homebudget.error.UniqueConditionException;
 import dsr.amm.homebudget.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,9 +29,9 @@ public class AuthController {
         authService.register(registerDTO);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public void accessDeniedHandler(HttpServletResponse response, AccessDeniedException exception) throws IOException {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, exception.getMessage());
+    @ExceptionHandler(UniqueConditionException.class)
+    public void uniqueConditionHandler(HttpServletResponse response, UniqueConditionException exception) throws IOException {
+        response.sendError(exception.getResponseCode(), exception.getMessage());
     }
 
 }
