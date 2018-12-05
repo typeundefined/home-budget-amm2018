@@ -16,6 +16,8 @@
 *.iws
 *.iml
 *.ipr
+*.yaml
+*.yml
 /out/
 
 ### NetBeans ###

@@ -12,12 +12,12 @@ public class CategoryDTO {
 
     private Person owner;
 
-    public Person getOwner() {
-        return owner;
+    public Long getId() {
+        return id;
     }
 
-    public void setOwner(Person owner) {
-        this.owner = owner;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -28,14 +28,6 @@ public class CategoryDTO {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -43,5 +35,12 @@ public class CategoryDTO {
     public void setDescription(String description) {
         this.description = description;
     }
-}
 
+    public Person getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Person owner) {
+        this.owner = owner;
+    }
+}

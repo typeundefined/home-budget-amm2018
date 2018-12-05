@@ -9,6 +9,6 @@ services:
       - "5432:5432"
     environment:
       TZ: Europe/Moscow
-      POSTGRES_PASSWORD: myPass
-      POSTGRES_USER: user
+      POSTGRES_PASSWORD: ullu-tau
+      POSTGRES_USER: postgres
       POSTGRES_DB: home-budget
