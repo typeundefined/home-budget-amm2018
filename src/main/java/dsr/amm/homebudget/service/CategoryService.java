@@ -29,4 +29,9 @@ public class CategoryService {
         repository.save(mapper.map(category, Category.class));
     }
 
+    @Transactional
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
+
 }
