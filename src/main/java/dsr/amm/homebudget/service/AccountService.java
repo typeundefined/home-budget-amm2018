@@ -36,12 +36,14 @@ public class AccountService {
     private TransactionRepository<DepositTx> depositRepo;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private OrikaMapper mapper;
 
     @Transactional
     public List<AccountDTO> getMyAccounts() {
-        // FIXME return my accounts only!
-        Iterable<Account> accList = repository.findAll();
+        List<Account> accList = repository.findByOwner(authService.getMyself());
         return mapper.mapAsList(accList, AccountDTO.class);
     }
 
@@ -51,6 +53,8 @@ public class AccountService {
         account.setOwner(getMyself());
         account.setCurrentValue(BigDecimal.ZERO);
         account.setCreateDate(OffsetDateTime.now());
+        account.setOwner(authService.getMyself());
+
 
         // TODO: move to the mapper!
         account.setCurrency(getCurrency(newAcc.getCurrency()));

@@ -23,7 +23,7 @@ public class CurrencyController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody @Valid CurrencyDTO curr) {
-        service.create(curr);
+    public CurrencyDTO create(@RequestBody @Valid CurrencyDTO curr) {
+        return service.create(curr);
     }
 }
