@@ -36,7 +36,7 @@ public class AccountController {
 
     @RequestMapping(value = "/{id}/transactions", method = POST)
     @ResponseStatus(CREATED)
-    public TransactionDTO addDeposit(@RequestBody @Valid TransactionDTO tx, @PathVariable("id") Long accountId) {
+    public TransactionDTO addTransaction(@RequestBody @Valid TransactionDTO tx, @PathVariable("id") Long accountId) {
         if (tx instanceof DepositTxDTO) {
             return accountService.deposit(accountId, (DepositTxDTO) tx);
         }
