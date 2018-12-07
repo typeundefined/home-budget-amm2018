@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -62,7 +60,6 @@ public class AuthService {
     @Transactional
     public void register(RegistrationDTO registrationDTO) {
         Person person = mapper.map(registrationDTO, Person.class);
-
         person.setPassword(passwordEncoder.encode(person.getPassword()));
         person.setRegisterDate(OffsetDateTime.now());
         try {
@@ -72,5 +69,8 @@ public class AuthService {
         }
     }
 
+    public Person getMyself() {
+        return (Person) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
 }
 
