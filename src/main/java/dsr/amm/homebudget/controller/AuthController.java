@@ -1,5 +1,6 @@
 package dsr.amm.homebudget.controller;
 
+import dsr.amm.homebudget.data.dto.JwtResponseDTO;
 import dsr.amm.homebudget.data.dto.LoginDTO;
 import dsr.amm.homebudget.data.dto.RegistrationDTO;
 import dsr.amm.homebudget.service.AuthService;
@@ -21,8 +22,8 @@ public class AuthController {
     private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
 
     @RequestMapping(path="/login", method = POST)
-    public void login(@RequestBody LoginDTO loginDTO) {
-       authService.login(loginDTO);
+    public JwtResponseDTO login(@RequestBody LoginDTO loginDTO) {
+       return authService.login(loginDTO);
     }
 
     @RequestMapping(path = "/register", method = POST)

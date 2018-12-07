@@ -2,6 +2,7 @@ package dsr.amm.homebudget.service;
 
 import dsr.amm.homebudget.OrikaMapper;
 import dsr.amm.homebudget.controller.exception.UniqueViolationException;
+import dsr.amm.homebudget.data.dto.JwtResponseDTO;
 import dsr.amm.homebudget.data.dto.LoginDTO;
 import dsr.amm.homebudget.data.dto.RegistrationDTO;
 import dsr.amm.homebudget.data.entity.Person;
@@ -14,7 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,24 +38,24 @@ public class AuthService {
     @Autowired
     private PersonRepository repository;
 
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Transactional
-    public void login(LoginDTO loginDTO) {
-        try {
+    @Transactional(readOnly = true)
+    public JwtResponseDTO login(LoginDTO loginDTO) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDTO.getUsername(),
+                        loginDTO.getPassword()
+                )
+        );
 
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            Authentication authentication =
-                    authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-
-            SecurityContextHolder.getContext()
-                    .setAuthentication(authentication);
-        } catch (AuthenticationException e) {
-            logger.error("Failed to authenticate : " + loginDTO.getUsername());
-            throw e; // [KN] Spring knows how to handle it
-        }
+        String jwt = jwtTokenProvider.generateToken(authentication);
+        return new JwtResponseDTO(jwt);
     }
 
     @Transactional
