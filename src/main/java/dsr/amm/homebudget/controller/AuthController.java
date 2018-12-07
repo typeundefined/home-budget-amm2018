@@ -22,7 +22,7 @@ public class AuthController {
        authService.login(loginDTO);
     }
 
-    @RequestMapping(path = "/signup", method = RequestMethod.POST)
+    @RequestMapping(path = "/register", method = RequestMethod.POST)
     public void registration(@RequestBody RegistrationDTO registrationDTO){
         authService.userRegistration(registrationDTO);
     }
