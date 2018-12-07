@@ -1,5 +1,6 @@
 package dsr.amm.homebudget.service;
 
+import dsr.amm.homebudget.OrikaMapper;
 import dsr.amm.homebudget.data.entity.Person;
 import dsr.amm.homebudget.data.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,4 +24,5 @@ public class PrincipalDetailsService implements UserDetailsService {
                 () -> new RuntimeException("Username not found"));
         return new Principal(person);
     }
+
 }

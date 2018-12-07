@@ -1,6 +1,7 @@
 package dsr.amm.homebudget.service;
 
 import dsr.amm.homebudget.OrikaMapper;
+import dsr.amm.homebudget.UniqueConditionException;
 import dsr.amm.homebudget.data.dto.LoginDTO;
 import dsr.amm.homebudget.data.dto.RegistrationDTO;
 import dsr.amm.homebudget.data.entity.Person;
@@ -61,17 +62,7 @@ public class AuthService{
             this.repository.save(person);
         }
         catch (DataIntegrityViolationException e) {
-            throw new UniqueConditionException(
-                    "Username '" + person.getUsername() + "' is already in use"
-            );
-        }
-    }
-
-    @ResponseStatus(code = HttpStatus.NOT_ACCEPTABLE)
-    public class UniqueConditionException extends RuntimeException{
-
-        UniqueConditionException(String msg) {
-            super(msg);
+            throw new UniqueConditionException("Username " + person.getUsername() + "already exists");
         }
     }
 
