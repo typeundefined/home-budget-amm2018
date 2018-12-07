@@ -1,11 +1,14 @@
 package dsr.amm.homebudget.service;
 
+import dsr.amm.homebudget.error.FailedAuthException;
 import dsr.amm.homebudget.OrikaMapper;
-import dsr.amm.homebudget.UniqueConditionException;
+import dsr.amm.homebudget.error.UniqueConditionException;
 import dsr.amm.homebudget.data.dto.LoginDTO;
 import dsr.amm.homebudget.data.dto.RegistrationDTO;
 import dsr.amm.homebudget.data.entity.Person;
 import dsr.amm.homebudget.data.repository.PersonRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,11 +38,15 @@ public class AuthService{
     @Autowired
     private PersonRepository repository;
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Transactional
     public void login(LoginDTO loginDTO) {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
         try {
+
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                    new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
+
             Authentication authentication =
                     authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
@@ -47,11 +54,12 @@ public class AuthService{
                     .setAuthentication(authentication);
         }
         catch(AuthenticationException e){
-            System.err.println("Failed to authenticate : " + loginDTO.getUsername());
+            logger.error("Failed to authenticate : " + loginDTO.getUsername());
+            throw new FailedAuthException("Failed to authenticate : " + loginDTO.getUsername());
         }
     }
 
-    public void userRegistration(RegistrationDTO registrationDTO) throws UniqueConditionException {
+    public void userRegistration(RegistrationDTO registrationDTO)           {//erased throw
         Person person = mapper.map(registrationDTO, Person.class);
 
         person.setPassword(passwordEncoder.encode(person.getPassword()));
