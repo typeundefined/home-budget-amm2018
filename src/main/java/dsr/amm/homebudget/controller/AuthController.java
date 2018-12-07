@@ -6,8 +6,9 @@ import dsr.amm.homebudget.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 
 @RestController
@@ -17,14 +18,14 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @RequestMapping(path="/login", method = RequestMethod.POST)
+    @RequestMapping(path="/login", method = POST)
     public void login(@RequestBody LoginDTO loginDTO) {
        authService.login(loginDTO);
     }
 
-    @RequestMapping(path = "/register", method = RequestMethod.POST)
+    @RequestMapping(path = "/register", method = POST)
     public void registration(@RequestBody RegistrationDTO registrationDTO){
-        authService.userRegistration(registrationDTO);
+        authService.register(registrationDTO);
     }
 
 }

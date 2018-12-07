@@ -1,8 +1,7 @@
 package dsr.amm.homebudget.service;
 
-import dsr.amm.homebudget.error.FailedAuthException;
 import dsr.amm.homebudget.OrikaMapper;
-import dsr.amm.homebudget.error.UniqueConditionException;
+import dsr.amm.homebudget.controller.exception.UniqueViolationException;
 import dsr.amm.homebudget.data.dto.LoginDTO;
 import dsr.amm.homebudget.data.dto.RegistrationDTO;
 import dsr.amm.homebudget.data.entity.Person;
@@ -11,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,7 +25,7 @@ import java.time.OffsetDateTime;
 
 
 @Service
-public class AuthService{
+public class AuthService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -52,23 +53,22 @@ public class AuthService{
 
             SecurityContextHolder.getContext()
                     .setAuthentication(authentication);
-        }
-        catch(AuthenticationException e){
+        } catch (AuthenticationException e) {
             logger.error("Failed to authenticate : " + loginDTO.getUsername());
-            throw new FailedAuthException("Failed to authenticate : " + loginDTO.getUsername());
+            throw e; // [KN] Spring knows how to handle it
         }
     }
 
-    public void userRegistration(RegistrationDTO registrationDTO)           {//erased throw
+    @Transactional
+    public void register(RegistrationDTO registrationDTO) {
         Person person = mapper.map(registrationDTO, Person.class);
 
         person.setPassword(passwordEncoder.encode(person.getPassword()));
         person.setRegisterDate(OffsetDateTime.now());
         try {
             this.repository.save(person);
-        }
-        catch (DataIntegrityViolationException e) {
-            throw new UniqueConditionException("Username " + person.getUsername() + " already exists");
+        } catch (DataIntegrityViolationException e) {
+            throw new UniqueViolationException("Username " + person.getUsername() + " already exists");
         }
     }
 
