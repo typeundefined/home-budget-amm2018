@@ -2,6 +2,7 @@ package dsr.amm.homebudget.service;
 
 import dsr.amm.homebudget.data.entity.Person;
 import dsr.amm.homebudget.data.repository.PersonRepository;
+import dsr.amm.homebudget.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

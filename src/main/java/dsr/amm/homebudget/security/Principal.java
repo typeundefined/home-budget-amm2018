@@ -1,4 +1,4 @@
-package dsr.amm.homebudget.service;
+package dsr.amm.homebudget.security;
 
 import dsr.amm.homebudget.data.entity.Person;
 import org.springframework.security.core.GrantedAuthority;
