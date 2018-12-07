@@ -18,7 +18,7 @@ public class AuthController {
     private AuthService authService;
 
     @RequestMapping(path="/login", method = RequestMethod.POST)
-    public void login(LoginDTO loginDTO) {
+    public void login(@RequestBody LoginDTO loginDTO) {
        authService.login(loginDTO);
     }
 
