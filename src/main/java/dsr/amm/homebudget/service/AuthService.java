@@ -70,7 +70,8 @@ public class AuthService {
     }
 
     public Person getMyself() {
-        return (Person) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Principal principal = (Principal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return principal.getPerson();
     }
 }
 
