@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -24,6 +26,11 @@ public class AuthController {
     @RequestMapping(path = "/signup", method = RequestMethod.POST)
     public void registration(@RequestBody RegistrationDTO registrationDTO){
         authService.userRegistration(registrationDTO);
+    }
+
+    @RequestMapping(path = "/all_users", method = RequestMethod.GET)
+    public List<RegistrationDTO> getAll() {
+        return authService.getUsers();
     }
 
 }
