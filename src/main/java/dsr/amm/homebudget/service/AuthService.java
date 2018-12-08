@@ -41,7 +41,7 @@ public class AuthService {
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(AuthService.class);
 
     @Transactional(readOnly = true)
     public JwtResponseDTO login(LoginDTO loginDTO) {
