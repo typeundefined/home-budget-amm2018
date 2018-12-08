@@ -12,6 +12,7 @@ import dsr.amm.homebudget.data.entity.tx.WithdrawalTx;
 import dsr.amm.homebudget.data.repository.AccountRepository;
 import dsr.amm.homebudget.data.repository.CurrencyRepository;
 import dsr.amm.homebudget.data.repository.TransactionRepository;
+import dsr.amm.homebudget.util.authentication.PrincipalRetriever;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,9 @@ public class AccountService {
     @Autowired
     private OrikaMapper mapper;
 
+    @Autowired
+    private PrincipalRetriever principalRetriever;
+
     @Transactional
     public List<AccountDTO> getMyAccounts() {
         List<Account> accList = repository.findByOwner(authService.getMyself());
@@ -50,7 +54,6 @@ public class AccountService {
     @Transactional
     public AccountDTO create(AccountNewDTO newAcc) {
         Account account = mapper.map(newAcc, Account.class);
-        account.setOwner(getMyself());
         account.setCurrentValue(BigDecimal.ZERO);
         account.setCreateDate(OffsetDateTime.now());
         account.setOwner(authService.getMyself());
@@ -71,11 +74,6 @@ public class AccountService {
     private Currency getCurrency(CurrencyIdDTO currency) {
         return currencyRepository.findById(currency.getCode())
                 .orElseThrow(notFound("No such currency found"));
-    }
-
-    private Person getMyself() {
-        // TODO implement me when authentication gets ready
-        return null;
     }
 
     public TransactionDTO withdraw(Long accountId, WithdrawalTxDTO tx) {

@@ -7,6 +7,7 @@ import dsr.amm.homebudget.data.dto.LoginDTO;
 import dsr.amm.homebudget.data.dto.RegistrationDTO;
 import dsr.amm.homebudget.data.entity.Person;
 import dsr.amm.homebudget.data.repository.PersonRepository;
+import dsr.amm.homebudget.util.authentication.PrincipalRetriever;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ public class AuthService {
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    private PrincipalRetriever principalRetriever;
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Transactional(readOnly = true)
@@ -71,8 +75,7 @@ public class AuthService {
     }
 
     public Person getMyself() {
-        Principal principal = (Principal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return principal.getPerson();
+        return principalRetriever.getPrincipal().getPerson();
     }
 }
 
