@@ -10,6 +10,8 @@ spring:
     username: user
     password: myPass
     driver-class-name: org.postgresql.Driver
+  resources:
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
 
 security:
   jwtSecret: thisIsMySecret!
