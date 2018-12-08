@@ -20,12 +20,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RegistationDTO"
+              $ref: '#/components/schemas/RegistationDTO'
       responses:
         '200':
           description: Успешная регистрация
         '400':
-          $ref: "#/components/responses/ValidationError"
+          $ref: '#/components/responses/ValidationError'
 
   /auth/login/:
     post:
@@ -34,7 +34,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginDTO"
+              $ref: '#/components/schemas/LoginDTO'
       tags:
       - 'аутентификация и авторизация'
       operationId: authLogin
@@ -45,13 +45,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/JwtResponseDTO"
+                $ref: '#/components/schemas/JwtResponseDTO'
         '400':
-          $ref: "#/components/responses/ValidationError"
+          $ref: '#/components/responses/ValidationError'
   /account:
     get:
       tags:
-      - "аккаунты"
+      - 'аккаунты'
       operationId: getMyAccounts
       summary: Получить список аккаунтов
       responses:
@@ -63,34 +63,34 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: "#/components/schemas/AccountDTO"
+                  $ref: '#/components/schemas/AccountDTO'
         '403':
-          $ref: "#/components/responses/AuthenticationRequiredError"
+          $ref: '#/components/responses/AuthenticationRequiredError'
     post:
       tags:
-      - "аккаунты"
+      - 'аккаунты'
       operationId: createAccount
       summary: Создать аккаунт
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AccountNewDTO"
+              $ref: '#/components/schemas/AccountNewDTO'
       responses:
         '200':
           description: Аккаунт успешно создан
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccountDTO"
+                $ref: '#/components/schemas/AccountDTO'
         '400':
-          $ref: "#/components/responses/ValidationError"
+          $ref: '#/components/responses/ValidationError'
         '403':
-          $ref: "#/components/responses/AuthenticationRequiredError"
+          $ref: '#/components/responses/AuthenticationRequiredError'
   /currency:
     get:
       tags:
-        - "валюты"
+        - 'валюты'
       operationId: getAllCurrencies
       summary: Получить все доступные валюты
       responses:
@@ -101,30 +101,30 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/CurrencyDTO"
+                  $ref: '#/components/schemas/CurrencyDTO'
         '403':
-          $ref: "#/components/responses/AuthenticationRequiredError"
+          $ref: '#/components/responses/AuthenticationRequiredError'
     post:
       tags:
-        - "валюты"
+        - 'валюты'
       operationId: createCurrency
       summary: Создать новую валюту
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CurrencyDTO"
+              $ref: '#/components/schemas/CurrencyDTO'
       responses:
         '200':
           description: Валюта успешно создана
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CurrencyDTO"
+                $ref: '#/components/schemas/CurrencyDTO'
         '400':
-          $ref: "#/components/responses/ValidationError"
+          $ref: '#/components/responses/ValidationError'
         '403':
-          $ref: "#/components/responses/AuthenticationRequiredError"
+          $ref: '#/components/responses/AuthenticationRequiredError'
 
 components:
   responses:
@@ -133,25 +133,25 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/APIError"
+            $ref: '#/components/schemas/APIError'
           example:
             error: Forbidden
             message: Access Denied
-            path: "/"
+            path: '/'
             status: 403
-            timestamp: "2018-12-08T13:54:15.265+0000"
+            timestamp: '2018-12-08T13:54:15.265+0000'
     ValidationError:
       description: Ошибка валидации
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/APIError"
+            $ref: '#/components/schemas/APIError'
           example:
             error: Bad Request
-            message: "Validation failed for object. Error count: 1"
-            path: "/"
+            message: 'Validation failed for object. Error count: 1'
+            path: '/'
             status: 400
-            timestamp: "2018-12-08T13:54:15.265+0000"
+            timestamp: '2018-12-08T13:54:15.265+0000'
   schemas:
     RegistationDTO:
       properties:
@@ -183,7 +183,7 @@ components:
         accessToken:
           type: string
           description: Токен
-          example: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTU0ND"
+          example: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTU0ND'
         tokenType:
           type: string
           description: Тип токена
@@ -198,7 +198,7 @@ components:
           type: string
         currency:
           type: object
-          $ref: "#/components/schemas/CurrencyDTO"
+          $ref: '#/components/schemas/CurrencyDTO'
         createdDate:
           type: string
           format: date
@@ -214,7 +214,7 @@ components:
           description: Описание
         currency:
           type: object
-          $ref: "#/components/schemas/CurrencyIdDTO"
+          $ref: '#/components/schemas/CurrencyIdDTO'
       required:
       - name
       - currency
@@ -269,4 +269,5 @@ components:
           description: Статус
         timestamp:
           type: string
+          description: Дата и время
           format: 'date-time'
