@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,8 +26,9 @@ public class CurrencyService {
 
 
     @Transactional
-    public void create(CurrencyDTO curr) {
+    public CurrencyDTO create(CurrencyDTO curr) {
 
-        repository.save(mapper.map(curr, Currency.class));
+        Currency result = repository.save(mapper.map(curr, Currency.class));
+        return mapper.map(result, CurrencyDTO.class);
     }
 }

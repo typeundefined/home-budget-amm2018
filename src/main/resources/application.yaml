@@ -10,3 +10,7 @@ spring:
     username: user
     password: myPass
     driver-class-name: org.postgresql.Driver
+
+security:
+  jwtSecret: thisIsMySecret!
+  jwtExpirationInMs: 3600000
