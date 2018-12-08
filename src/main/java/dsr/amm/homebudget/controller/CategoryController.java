@@ -30,7 +30,6 @@ public class CategoryController {
         service.create(curr);
     }
 
-
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") Long id) {
         service.delete(id);
