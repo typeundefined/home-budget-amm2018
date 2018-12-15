@@ -8,11 +8,14 @@ import dsr.amm.homebudget.data.entity.Account;
 import dsr.amm.homebudget.data.entity.Currency;
 import dsr.amm.homebudget.data.entity.Person;
 import dsr.amm.homebudget.data.entity.tx.DepositTx;
+import dsr.amm.homebudget.data.entity.tx.Transaction;
 import dsr.amm.homebudget.data.entity.tx.WithdrawalTx;
 import dsr.amm.homebudget.data.repository.AccountRepository;
 import dsr.amm.homebudget.data.repository.CurrencyRepository;
 import dsr.amm.homebudget.data.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +37,9 @@ public class AccountService {
 
     @Autowired
     private TransactionRepository<DepositTx> depositRepo;
+
+    @Autowired
+    private  TransactionRepository<Transaction> transactionRepository;
 
     @Autowired
     private AuthService authService;
@@ -78,6 +84,7 @@ public class AccountService {
         return null;
     }
 
+    @Transactional
     public TransactionDTO withdraw(Long accountId, WithdrawalTxDTO tx) {
         Account acc = getAccount(accountId);
 
@@ -128,6 +135,12 @@ public class AccountService {
     private Supplier<ApiException> notFound(String s) {
         return () -> new NotFoundException(s);
 
+    }
+
+    public Page<TransactionDTO> getAccountTransactions(Pageable pageable, Long accountId) {
+        Account account = getAccount(accountId, false);
+        Page<Transaction> transactions = transactionRepository.findAllByAccount(pageable, account);
+        return transactions.map((Transaction t) -> mapper.map(t, TransactionDTO.class));
     }
 
 

@@ -4,7 +4,8 @@ import dsr.amm.homebudget.controller.exception.ApiException;
 import dsr.amm.homebudget.data.dto.*;
 import dsr.amm.homebudget.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -44,6 +45,11 @@ public class AccountController {
             return accountService.withdraw(accountId, (WithdrawalTxDTO) tx);
         }
         throw new ApiException("Unsupported transaction type submitted");
+    }
+
+    @RequestMapping(value = "/{id}/transactions", method = GET)
+    public Page<TransactionDTO> getTransactions(Pageable pageable, @PathVariable("id") Long accountId) {
+        return accountService.getAccountTransactions(pageable, accountId);
     }
 
 }
