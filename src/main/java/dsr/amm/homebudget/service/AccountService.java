@@ -136,7 +136,7 @@ public class AccountService {
 
     private void ensureMine(Account acc) {
         Long ownerId = acc.getOwner().getId();
-        if (ownerId.equals(authService.getMyself().getId())) {
+        if (!ownerId.equals(authService.getMyself().getId())) {
             throw new ForbiddenException("You have no permission to access this account");
         }
     }
