@@ -2,6 +2,7 @@ package dsr.amm.homebudget.service;
 
 import dsr.amm.homebudget.OrikaMapper;
 import dsr.amm.homebudget.controller.exception.ApiException;
+import dsr.amm.homebudget.controller.exception.ForbiddenException;
 import dsr.amm.homebudget.controller.exception.NotFoundException;
 import dsr.amm.homebudget.data.dto.*;
 import dsr.amm.homebudget.data.entity.Account;
@@ -56,7 +57,6 @@ public class AccountService {
     @Transactional
     public AccountDTO create(AccountNewDTO newAcc) {
         Account account = mapper.map(newAcc, Account.class);
-        account.setOwner(getMyself());
         account.setCurrentValue(BigDecimal.ZERO);
         account.setCreateDate(OffsetDateTime.now());
         account.setOwner(authService.getMyself());
@@ -77,11 +77,6 @@ public class AccountService {
     private Currency getCurrency(CurrencyIdDTO currency) {
         return currencyRepository.findById(currency.getCode())
                 .orElseThrow(notFound("No such currency found"));
-    }
-
-    private Person getMyself() {
-        // TODO implement me when authentication gets ready
-        return null;
     }
 
     @Transactional
@@ -129,12 +124,14 @@ public class AccountService {
     }
 
     private void ensureMine(Account acc) {
-        // TODO implement me
+        Long ownerId = acc.getOwner().getId();
+        if (ownerId.equals(authService.getMyself().getId())) {
+            throw new ForbiddenException("You have no permission to access this account");
+        }
     }
 
     private Supplier<ApiException> notFound(String s) {
         return () -> new NotFoundException(s);
-
     }
 
     public Page<TransactionDTO> getAccountTransactions(Pageable pageable, Long accountId) {
@@ -142,6 +139,5 @@ public class AccountService {
         Page<Transaction> transactions = transactionRepository.findAllByAccount(pageable, account);
         return transactions.map((Transaction t) -> mapper.map(t, TransactionDTO.class));
     }
-
 
 }
