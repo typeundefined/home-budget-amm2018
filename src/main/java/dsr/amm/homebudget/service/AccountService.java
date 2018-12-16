@@ -154,6 +154,7 @@ public class AccountService {
     @Transactional
     public void deleteTransaction(Long accountId, Long transactionId) {
         Account account = getAccount(accountId, false);
+        // FIXME change deletion logic
         transactionRepository.deleteById(account, transactionId);
     }
 
