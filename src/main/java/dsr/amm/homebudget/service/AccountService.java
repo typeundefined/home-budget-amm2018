@@ -2,17 +2,20 @@ package dsr.amm.homebudget.service;
 
 import dsr.amm.homebudget.OrikaMapper;
 import dsr.amm.homebudget.controller.exception.ApiException;
+import dsr.amm.homebudget.controller.exception.ForbiddenException;
 import dsr.amm.homebudget.controller.exception.NotFoundException;
 import dsr.amm.homebudget.data.dto.*;
 import dsr.amm.homebudget.data.entity.Account;
 import dsr.amm.homebudget.data.entity.Currency;
-import dsr.amm.homebudget.data.entity.Person;
 import dsr.amm.homebudget.data.entity.tx.DepositTx;
+import dsr.amm.homebudget.data.entity.tx.Transaction;
 import dsr.amm.homebudget.data.entity.tx.WithdrawalTx;
 import dsr.amm.homebudget.data.repository.AccountRepository;
 import dsr.amm.homebudget.data.repository.CurrencyRepository;
 import dsr.amm.homebudget.data.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +33,7 @@ public class AccountService {
     private CurrencyRepository currencyRepository;
 
     @Autowired
-    private TransactionRepository<WithdrawalTx> withdrawalTxRepository;
-
-    @Autowired
-    private TransactionRepository<DepositTx> depositRepo;
+    private TransactionRepository<Transaction> transactionRepository;
 
     @Autowired
     private AuthService authService;
@@ -50,7 +50,6 @@ public class AccountService {
     @Transactional
     public AccountDTO create(AccountNewDTO newAcc) {
         Account account = mapper.map(newAcc, Account.class);
-        account.setOwner(getMyself());
         account.setCurrentValue(BigDecimal.ZERO);
         account.setCreateDate(OffsetDateTime.now());
         account.setOwner(authService.getMyself());
@@ -65,7 +64,25 @@ public class AccountService {
 
     @Transactional
     public TransactionDTO deposit(Long accountId, DepositTxDTO tx) {
-        return null;
+        Account account = getAccount(accountId);
+        DepositTx transaction = mapper.map(tx, DepositTx.class);
+        transaction.setCreateDate(OffsetDateTime.now());
+        transaction.setSrc(account);
+
+        BigDecimal value = account.getCurrentValue();
+        BigDecimal amount = convertToCurrency(
+                transaction.getAmount(),
+                transaction.getCurrency(),
+                account.getCurrency());
+
+        BigDecimal newValue = value.add(amount);
+        account.setCurrentValue(newValue);
+        transaction.setNewValue(newValue);
+
+        DepositTx txResult = transactionRepository.save(transaction);
+        repository.save(account);
+
+        return mapper.map(txResult, TransactionDTO.class);
     }
 
     private Currency getCurrency(CurrencyIdDTO currency) {
@@ -73,11 +90,7 @@ public class AccountService {
                 .orElseThrow(notFound("No such currency found"));
     }
 
-    private Person getMyself() {
-        // TODO implement me when authentication gets ready
-        return null;
-    }
-
+    @Transactional
     public TransactionDTO withdraw(Long accountId, WithdrawalTxDTO tx) {
         Account acc = getAccount(accountId);
 
@@ -93,7 +106,7 @@ public class AccountService {
         acc.setCurrentValue(newValue);
         transaction.setNewValue(newValue);
 
-        WithdrawalTx txResult = withdrawalTxRepository.save(transaction);
+        WithdrawalTx txResult = transactionRepository.save(transaction);
         repository.save(acc);
 
         return mapper.map(txResult, TransactionDTO.class);
@@ -122,13 +135,27 @@ public class AccountService {
     }
 
     private void ensureMine(Account acc) {
-        // TODO implement me
+        Long ownerId = acc.getOwner().getId();
+        if (ownerId.equals(authService.getMyself().getId())) {
+            throw new ForbiddenException("You have no permission to access this account");
+        }
     }
 
     private Supplier<ApiException> notFound(String s) {
         return () -> new NotFoundException(s);
-
     }
 
+    public Page<TransactionDTO> getAccountTransactions(Pageable pageable, Long accountId) {
+        Account account = getAccount(accountId, false);
+        Page<Transaction> transactions = transactionRepository.findAllByAccount(pageable, account);
+        return transactions.map((Transaction t) -> mapper.map(t, TransactionDTO.class));
+    }
+
+    @Transactional
+    public void deleteTransaction(Long accountId, Long transactionId) {
+        Account account = getAccount(accountId, false);
+        // FIXME change deletion logic
+        transactionRepository.deleteById(account, transactionId);
+    }
 
 }
