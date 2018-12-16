@@ -33,7 +33,7 @@ public class AccountService {
     private CurrencyRepository currencyRepository;
 
     @Autowired
-    private  TransactionRepository<Transaction> transactionRepository;
+    private TransactionRepository<Transaction> transactionRepository;
 
     @Autowired
     private AuthService authService;
