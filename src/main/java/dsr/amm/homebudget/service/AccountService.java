@@ -7,7 +7,6 @@ import dsr.amm.homebudget.controller.exception.NotFoundException;
 import dsr.amm.homebudget.data.dto.*;
 import dsr.amm.homebudget.data.entity.Account;
 import dsr.amm.homebudget.data.entity.Currency;
-import dsr.amm.homebudget.data.entity.Person;
 import dsr.amm.homebudget.data.entity.tx.DepositTx;
 import dsr.amm.homebudget.data.entity.tx.Transaction;
 import dsr.amm.homebudget.data.entity.tx.WithdrawalTx;
@@ -150,6 +149,12 @@ public class AccountService {
         Account account = getAccount(accountId, false);
         Page<Transaction> transactions = transactionRepository.findAllByAccount(pageable, account);
         return transactions.map((Transaction t) -> mapper.map(t, TransactionDTO.class));
+    }
+
+    @Transactional
+    public void deleteTransaction(Long accountId, Long transactionId) {
+        Account account = getAccount(accountId, false);
+        transactionRepository.deleteById(account, transactionId);
     }
 
 }

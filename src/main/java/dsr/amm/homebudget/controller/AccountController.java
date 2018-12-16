@@ -12,8 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * Created by knekrasov on 10/15/2018.
@@ -50,6 +49,13 @@ public class AccountController {
     @RequestMapping(value = "/{id}/transactions", method = GET)
     public Page<TransactionDTO> getTransactions(Pageable pageable, @PathVariable("id") Long accountId) {
         return accountService.getAccountTransactions(pageable, accountId);
+    }
+
+    @RequestMapping(value = "/{accountId}/transactions/{transactionId}", method = DELETE)
+    public void deleteTransaction(
+            @PathVariable("accountId") Long accountId,
+            @PathVariable("transactionId") Long transactionId) {
+        accountService.deleteTransaction(accountId, transactionId);
     }
 
 }
