@@ -34,12 +34,6 @@ public class AccountService {
     private CurrencyRepository currencyRepository;
 
     @Autowired
-    private TransactionRepository<WithdrawalTx> withdrawalTxRepository;
-
-    @Autowired
-    private TransactionRepository<DepositTx> depositRepo;
-
-    @Autowired
     private  TransactionRepository<Transaction> transactionRepository;
 
     @Autowired
@@ -71,7 +65,25 @@ public class AccountService {
 
     @Transactional
     public TransactionDTO deposit(Long accountId, DepositTxDTO tx) {
-        return null;
+        Account account = getAccount(accountId);
+        DepositTx transaction = mapper.map(tx, DepositTx.class);
+        transaction.setCreateDate(OffsetDateTime.now());
+        transaction.setSrc(account);
+
+        BigDecimal value = account.getCurrentValue();
+        BigDecimal amount = convertToCurrency(
+                transaction.getAmount(),
+                transaction.getCurrency(),
+                account.getCurrency());
+
+        BigDecimal newValue = value.add(amount);
+        account.setCurrentValue(newValue);
+        transaction.setNewValue(newValue);
+
+        DepositTx txResult = transactionRepository.save(transaction);
+        repository.save(account);
+
+        return mapper.map(txResult, TransactionDTO.class);
     }
 
     private Currency getCurrency(CurrencyIdDTO currency) {
@@ -95,7 +107,7 @@ public class AccountService {
         acc.setCurrentValue(newValue);
         transaction.setNewValue(newValue);
 
-        WithdrawalTx txResult = withdrawalTxRepository.save(transaction);
+        WithdrawalTx txResult = transactionRepository.save(transaction);
         repository.save(acc);
 
         return mapper.map(txResult, TransactionDTO.class);
