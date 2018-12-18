@@ -48,6 +48,13 @@ public class AccountService {
     }
 
     @Transactional
+    public void deleteAccount(Long accountId) {
+        Account account = getAccount(accountId);
+        ensureMine(account);
+        repository.delete(account);
+    }
+
+    @Transactional
     public AccountDTO create(AccountNewDTO newAcc) {
         Account account = mapper.map(newAcc, Account.class);
         account.setCurrentValue(BigDecimal.ZERO);
