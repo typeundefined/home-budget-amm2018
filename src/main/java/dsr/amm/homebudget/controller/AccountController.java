@@ -6,6 +6,7 @@ import dsr.amm.homebudget.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,7 +19,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  * Created by knekrasov on 10/15/2018.
  */
 @RestController
-@RequestMapping("/account")
+@RequestMapping(path = "/account", consumes = MediaType.APPLICATION_JSON_VALUE)
 public class AccountController {
     @Autowired
     private AccountService accountService;
