@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface TransactionRepository<T extends Transaction> extends PagingAndSortingRepository<T, Long> {
-    @Query("from #{#entityName} tx where src = ?1 order by tx.createDate")
+    @Query("from #{#entityName} tx where src = ?1")
     Page<T> findAllByAccount(Pageable pageable, Account account);
 
     @Modifying
