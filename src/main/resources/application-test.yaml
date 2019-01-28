@@ -1,0 +1,4 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:test_mem;TRACE_LEVEL_FILE=3
+    driver-class-name: org.h2.Driver
