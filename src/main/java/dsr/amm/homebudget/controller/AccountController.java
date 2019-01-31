@@ -18,7 +18,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  * Created by knekrasov on 10/15/2018.
  */
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/accounts")
 public class AccountController {
     @Autowired
     private AccountService accountService;
