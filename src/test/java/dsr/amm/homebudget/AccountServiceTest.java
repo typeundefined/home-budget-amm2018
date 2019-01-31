@@ -1,5 +1,6 @@
 package dsr.amm.homebudget;
 
+import dsr.amm.homebudget.controller.exception.NotFoundException;
 import dsr.amm.homebudget.data.dto.AccountNewDTO;
 import dsr.amm.homebudget.data.dto.CurrencyDTO;
 import dsr.amm.homebudget.data.dto.CurrencyIdDTO;
@@ -80,6 +81,15 @@ public class AccountServiceTest {
         repository.findAll().forEach(accList::add);
 
         assertFalse(accList.isEmpty());
+    }
+
+    @Test(expected = NotFoundException.class)
+    @Transactional
+    @WithUserDetails("jpetrucci")
+    public void missingCurrencyTriggersException() {
+        AccountNewDTO dto = new AccountNewDTO();
+        dto.setCurrency(currId("EUR"));
+        accountService.create(dto);
     }
 
     private CurrencyIdDTO currId(String name) {
