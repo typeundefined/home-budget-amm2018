@@ -10,12 +10,16 @@ import dsr.amm.homebudget.service.AccountService;
 import dsr.amm.homebudget.service.AuthService;
 import dsr.amm.homebudget.service.CurrencyService;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +30,7 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {HomeBudgetApplication.class, TestConfig.class})
 @ActiveProfiles("test")
 public class AccountServiceTest {
     @Autowired
@@ -41,7 +45,12 @@ public class AccountServiceTest {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Before
+    @Transactional
+    @Commit
     public void before() {
         RegistrationDTO dto = new RegistrationDTO();
         dto.setUsername("jpetrucci");
@@ -49,6 +58,12 @@ public class AccountServiceTest {
         dto.setFullName("");
 
         authService.register(dto);
+
+        String username = authService.getMyself().getUsername();
+        UserDetails realUser = userDetailsService.loadUserByUsername(username);
+        SecurityContextHolder
+                .getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken(realUser, realUser.getPassword(), realUser.getAuthorities()));
     }
 
     @Test
@@ -67,9 +82,9 @@ public class AccountServiceTest {
         assertFalse(accList.isEmpty());
     }
 
-    private CurrencyIdDTO currId(String rub) {
+    private CurrencyIdDTO currId(String name) {
         CurrencyIdDTO dto = new CurrencyIdDTO();
-        dto.setCode(rub);
+        dto.setCode(name);
         return dto;
     }
 
