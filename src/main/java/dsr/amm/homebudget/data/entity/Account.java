@@ -1,10 +1,12 @@
 package dsr.amm.homebudget.data.entity;
 
+import dsr.amm.homebudget.data.entity.tx.Transaction;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 /**
  * Created by knekrasov on 10/15/2018.
@@ -26,6 +28,11 @@ public class Account {
 
     @ManyToOne
     private Person owner;
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "src_id")
+    private List<Transaction> transactions;
 
     private OffsetDateTime createDate;
 
@@ -85,5 +92,13 @@ public class Account {
 
     public void setCreateDate(OffsetDateTime createDate) {
         this.createDate = createDate;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 }

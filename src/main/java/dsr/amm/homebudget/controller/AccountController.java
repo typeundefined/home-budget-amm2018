@@ -34,6 +34,11 @@ public class AccountController {
         return accountService.create(newAcc);
     }
 
+    @RequestMapping(value = "/{id}", method = DELETE)
+    public void deleteAccount(@PathVariable("id") Long accountId) {
+        accountService.deleteAccount(accountId);
+    }
+
     @RequestMapping(value = "/{id}/transactions", method = POST)
     @ResponseStatus(CREATED)
     public TransactionDTO addTransaction(@RequestBody @Valid TransactionDTO tx, @PathVariable("id") Long accountId) {
