@@ -1,16 +1,19 @@
 buildscript {
 	ext {
 		springBootVersion = '2.0.5.RELEASE'
+		kotlin_version = '1.3.21'
 	}
 	repositories {
 		mavenCentral()
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 	}
 }
 
 apply plugin: 'java'
+apply plugin: 'kotlin'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
@@ -32,4 +35,6 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.security:spring-security-test')
+	compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+	compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+"
 }
