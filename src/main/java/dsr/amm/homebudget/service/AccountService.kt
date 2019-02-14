@@ -1,6 +1,7 @@
 package dsr.amm.homebudget.service
 
 import dsr.amm.homebudget.OrikaMapper
+import dsr.amm.homebudget.controller.exception.ForbiddenException
 import dsr.amm.homebudget.controller.exception.NotFoundException
 import dsr.amm.homebudget.data.dto.*
 import dsr.amm.homebudget.data.entity.Account
@@ -110,7 +111,10 @@ open class AccountService @Autowired constructor(
     }
 
     private fun ensureMine(acc: Account) {
-        // TODO implement me
+        if (acc.owner.id == authService.myself.id)
+            return
+        else
+            throw ForbiddenException("This is not your account!")
     }
 
     fun getTransactionsByAccount(pageable: Pageable, accountId: Long): Page<TransactionDTO> = transactionRepository
