@@ -14,14 +14,13 @@ import dsr.amm.homebudget.data.repository.AccountRepository
 import dsr.amm.homebudget.data.repository.CurrencyRepository
 import dsr.amm.homebudget.data.repository.TransactionRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 import java.math.BigDecimal
 import java.time.OffsetDateTime
-import java.util.function.Supplier
+import java.util.*
 
 @Service
 open class AccountService @Autowired constructor(
@@ -117,7 +116,17 @@ open class AccountService @Autowired constructor(
             throw ForbiddenException("This is not your account!")
     }
 
-    fun getTransactionsByAccount(pageable: Pageable, accountId: Long): Page<TransactionDTO> = transactionRepository
-            .findAllByAccount(pageable, getAccount(accountId, false))
-            .map { t: Transaction -> mapper.map<Transaction, TransactionDTO>(t, TransactionDTO::class.java) }
+    fun getTransactionsByAccount(pageable: Pageable, accountId: Long, from: Optional<OffsetDateTime>, to: Optional<OffsetDateTime>) =
+            when {
+                (from.isPresent && to.isPresent) ->
+                    transactionRepository.findAllByAccountWithTimeFilter(pageable, getAccount(accountId, false), from.get(), to.get())
+                (from.isPresent) ->
+                    transactionRepository.findAllByAccountWithTimeFilterFrom(pageable, getAccount(accountId, false), from.get())
+                (to.isPresent) ->
+                    transactionRepository.findAllByAccountWithTimeFilterTo(pageable, getAccount(accountId, false), to.get())
+                else ->
+                    transactionRepository.findAllByAccount(pageable, getAccount(accountId, false))
+            }
+                    .map { t: Transaction -> mapper.map<Transaction, TransactionDTO>(t, TransactionDTO::class.java) }
+
 }

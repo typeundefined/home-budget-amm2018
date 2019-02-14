@@ -6,6 +6,7 @@ import dsr.amm.homebudget.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -14,6 +15,8 @@ import javax.validation.Valid
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.web.bind.annotation.RequestMethod.GET
 import org.springframework.web.bind.annotation.RequestMethod.POST
+import java.time.OffsetDateTime
+import java.util.*
 
 /**
  * Created by knekrasov on 10/15/2018.
@@ -42,6 +45,12 @@ open class AccountController @Autowired constructor(open val accountService: Acc
     }
 
     @RequestMapping(value = ["/{id}/transactions"], method = [GET])
-    fun getTransactions(pageable: Pageable, @PathVariable("id") accountId: Long) =
-            accountService.getTransactionsByAccount(pageable, accountId)
+    fun getTransactions(
+            pageable: Pageable,
+            @PathVariable("id") accountId: Long,
+            @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) from: Optional<OffsetDateTime>,
+            @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) to: Optional<OffsetDateTime>
+    ):Page<TransactionDTO> {
+        return accountService.getTransactionsByAccount(pageable, accountId, from, to)
+    }
 }
