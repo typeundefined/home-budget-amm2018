@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="Console"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %black(%d{HH:mm:ss.SSS}) %highlight(%-5level) [%blue(%t)] %boldYellow(%C{10}): %msg%n%throwable
+            </Pattern>
+        </layout>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="Console"/>
+    </root>
+
+    <logger name="dsr.amm" level="trace" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="org.springframework" level="info" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.springframework.orm.jpa" level="debug" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="org.hibernate" level="info" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.hibernate.engine.jdbc.spi" level="info" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.hibernate.SQL" level="trace" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="org.hibernate.type" level="warn" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+</configuration>
