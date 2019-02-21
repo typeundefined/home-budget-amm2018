@@ -27,6 +27,9 @@ repositories {
 
 
 dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+"
+
 	compile 'org.postgresql:postgresql:42.1.1'
 	compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.2'
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
@@ -35,7 +38,6 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.security:spring-security-test')
-	compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-	compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+"
-    testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
+//    testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
+    compile group: 'com.h2database', name: 'h2', version: '1.4.197'
 }
