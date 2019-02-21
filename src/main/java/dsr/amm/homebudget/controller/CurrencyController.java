@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/currency")
+@RequestMapping(path = "/currencies")
 public class CurrencyController {
     @Autowired
     private CurrencyService service;
