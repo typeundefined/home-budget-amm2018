@@ -62,19 +62,37 @@ open class AccountService @Autowired constructor(
     }
 
     @Transactional
-    open fun deposit(accountId: Long?, tx: DepositTxDTO): TransactionDTO? {
-        return null
+    open fun deposit(accountId: Long, tx: DepositTxDTO): TransactionDTO {
+        val account = getAccount(accountId)
+        val transaction = mapper.map(tx, DepositTx::class.java)
+        transaction.createDate = OffsetDateTime.now()
+        transaction.src = account
+
+        val value = account.currentValue
+        val amount = convertToCurrency(
+                transaction.amount,
+                transaction.currency,
+                account.currency)
+
+        val newValue = value.add(amount)
+        account.currentValue = newValue
+        transaction.newValue = newValue
+
+        val txResult = transactionRepository.save(transaction)
+        repository.save(account)
+
+        return mapper.map(txResult, TransactionDTO::class.java)
     }
 
     private fun getCurrency(currency: CurrencyIdDTO) = currencyRepository
             .findById(currency.code)
             .orElse(null) ?: throw NotFoundException("No such currency found")
 
-
-    fun withdraw(accountId: Long, tx: WithdrawalTxDTO): TransactionDTO {
+    @Transactional
+    open fun withdraw(accountId: Long, tx: WithdrawalTxDTO): TransactionDTO {
         val acc = getAccount(accountId)
 
-        val transaction = mapper.map<WithdrawalTxDTO, WithdrawalTx>(tx, WithdrawalTx::class.java)
+        val transaction = mapper.map(tx, WithdrawalTx::class.java)
         transaction.createDate = OffsetDateTime.now()
         transaction.src = acc
 
@@ -116,7 +134,12 @@ open class AccountService @Autowired constructor(
             throw ForbiddenException("This is not your account!")
     }
 
-    fun getTransactionsByAccount(pageable: Pageable, accountId: Long, from: Optional<OffsetDateTime>, to: Optional<OffsetDateTime>) =
+    fun getAccountTransactions(
+            pageable: Pageable,
+            accountId: Long,
+            from: Optional<OffsetDateTime> = Optional.empty(),
+            to: Optional<OffsetDateTime> = Optional.empty()
+    ) =
             when {
                 (from.isPresent && to.isPresent) ->
                     transactionRepository.findAllByAccountWithTimeFilter(pageable, getAccount(accountId, false), from.get(), to.get())
@@ -129,4 +152,11 @@ open class AccountService @Autowired constructor(
             }
                     .map { t: Transaction -> mapper.map<Transaction, TransactionDTO>(t, TransactionDTO::class.java) }
 
+
+    @Transactional
+    open fun deleteTransaction(accountId: Long, transactionId: Long) {
+        val account = getAccount(accountId, false)
+        // FIXME change deletion logic
+        transactionRepository.deleteById(account, transactionId)
+    }
 }

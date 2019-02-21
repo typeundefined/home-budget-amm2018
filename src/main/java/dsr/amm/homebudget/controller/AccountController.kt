@@ -14,6 +14,7 @@ import javax.validation.Valid
 
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.web.bind.annotation.RequestMethod.GET
+import org.springframework.web.bind.annotation.RequestMethod.DELETE
 import org.springframework.web.bind.annotation.RequestMethod.POST
 import java.time.OffsetDateTime
 import java.util.*
@@ -51,6 +52,14 @@ open class AccountController @Autowired constructor(open val accountService: Acc
             @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) from: Optional<OffsetDateTime>,
             @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) to: Optional<OffsetDateTime>
     ):Page<TransactionDTO> {
-        return accountService.getTransactionsByAccount(pageable, accountId, from, to)
+        return accountService.getAccountTransactions(pageable, accountId, from, to)
+    }
+
+
+    @RequestMapping(value = ["/{accountId}/transactions/{transactionId}"], method = [DELETE])
+    fun deleteTransaction(
+            @PathVariable("accountId") accountId: Long,
+            @PathVariable("transactionId") transactionId: Long) {
+        accountService.deleteTransaction(accountId, transactionId)
     }
 }

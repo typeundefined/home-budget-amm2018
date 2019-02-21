@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -108,7 +109,7 @@ public class AccountServiceTest {
 
         assertEquals(accList.get(0).getCurrentValue(), BigDecimal.valueOf(14.0));
 
-        Page<TransactionDTO> txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.getId());
+        Page<TransactionDTO> txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.getId(), Optional.empty(), Optional.empty());
         assertEquals(txHistory.getTotalElements(), 1L);
         TransactionDTO tx = txHistory.iterator().next();
         assertEquals("deposit", tx.getType());
@@ -129,7 +130,7 @@ public class AccountServiceTest {
 
         assertEquals(accList.get(0).getCurrentValue(), BigDecimal.valueOf(9.0));
 
-        Page<TransactionDTO> txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.getId());
+        Page<TransactionDTO> txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.getId(), Optional.empty(), Optional.empty());
         assertEquals(txHistory.getTotalElements(), 2L);
         TransactionDTO tx = txHistory
                 .stream()
