@@ -21,9 +21,12 @@ import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.util.*
+import javax.persistence.EntityManagerFactory
+import javax.persistence.LockModeType
 
 @Service
 open class AccountService @Autowired constructor(
+        open val entityManagerFactory: EntityManagerFactory,
         open val repository: AccountRepository,
         open val currencyRepository: CurrencyRepository,
         open val withdrawalTxRepository: TransactionRepository<WithdrawalTx>,
