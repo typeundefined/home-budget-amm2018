@@ -107,8 +107,7 @@ open class AccountService @Autowired constructor(
                     ?: throw NotFoundException("No such transaction found")
 
             transaction.createDate = oldTx.createDate
-            val trx = transactionRepository.findLastEarlierThan(acc, oldTx.createDate)
-            val value = trx?.newValue ?: 0.0.toBigDecimal()
+            val value = transactionRepository.findLastEarlierThan(acc, oldTx.createDate)?.newValue ?: 0.0.toBigDecimal()
 
             val newValue = value.subtract(amount)
             acc.currentValue = newValue
@@ -146,7 +145,26 @@ open class AccountService @Autowired constructor(
                     if (it.isAfter(lastTx.createDate))
                         functionCreateTx.invoke()
                     else {
-                        TODO("update account and transaction values")
+                        val value = transactionRepository.findLastEarlierThan(acc, transaction.createDate)?.newValue
+                                ?: 0.0.toBigDecimal()
+
+                        val newValue = value.subtract(amount)
+                        acc.currentValue = newValue
+                        transaction.newValue = newValue
+
+                        val txResult = transactionRepository.save(transaction)
+                        val updatedTxList = transactionRepository
+                                .findAllLaterThan(Pageable.unpaged(), acc, transaction.createDate)
+                                .iterator()
+                                .asSequence()
+                                .toList()
+                                .updateTransactionsValues(txResult.newValue)
+
+                        transactionRepository.saveAll(updatedTxList)
+                        acc.currentValue = updatedTxList.last().newValue
+                        repository.save(acc)
+
+                        mapper.map(txResult, TransactionDTO::class.java)
                     }
                 } ?: functionCreateTx.invoke()
             } ?: functionCreateTx.invoke()
