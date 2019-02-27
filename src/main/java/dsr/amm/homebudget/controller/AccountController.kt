@@ -2,6 +2,8 @@ package dsr.amm.homebudget.controller
 
 import dsr.amm.homebudget.controller.exception.ApiException
 import dsr.amm.homebudget.data.dto.*
+import dsr.amm.homebudget.data.entity.tx.DepositTx
+import dsr.amm.homebudget.data.entity.tx.WithdrawalTx
 import dsr.amm.homebudget.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -36,14 +38,11 @@ open class AccountController @Autowired constructor(open val accountService: Acc
 
     @RequestMapping(value = ["/{id}/transactions"], method = [POST])
     @ResponseStatus(CREATED)
-    fun addTransaction(@RequestBody @Valid tx: TransactionDTO, @PathVariable("id") accountId: Long): TransactionDTO? {
-        if (tx is DepositTxDTO) {
-            return accountService.deposit(accountId, tx)
-        } else if (tx is WithdrawalTxDTO) {
-            return accountService.withdraw(accountId, tx)
-        }
-        throw ApiException("Unsupported transaction type submitted")
-    }
+    fun addTransaction(
+            @RequestBody @Valid tx: TransactionDTO,
+            @PathVariable("id") accountId: Long
+    ): TransactionDTO? =
+            accountService.transaction(accountId, tx)
 
     @RequestMapping(value = ["/{id}/transactions"], method = [GET])
     fun getTransactions(
@@ -51,10 +50,8 @@ open class AccountController @Autowired constructor(open val accountService: Acc
             @PathVariable("id") accountId: Long,
             @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) from: Optional<OffsetDateTime>,
             @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) to: Optional<OffsetDateTime>
-    ):Page<TransactionDTO> {
-        return accountService.getAccountTransactions(pageable, accountId, from, to)
-    }
-
+    ):Page<TransactionDTO> =
+            accountService.getAccountTransactions(pageable, accountId, from, to)
 
     @RequestMapping(value = ["/{accountId}/transactions/{transactionId}"], method = [DELETE])
     fun deleteTransaction(

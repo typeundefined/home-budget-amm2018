@@ -1,6 +1,7 @@
 package dsr.amm.homebudget.service
 
 import dsr.amm.homebudget.OrikaMapper
+import dsr.amm.homebudget.controller.exception.ApiException
 import dsr.amm.homebudget.controller.exception.ForbiddenException
 import dsr.amm.homebudget.controller.exception.NotFoundException
 import dsr.amm.homebudget.data.dto.*
@@ -91,16 +92,31 @@ open class AccountService @Autowired constructor(
             .orElse(null) ?: throw NotFoundException("No such currency found")
 
     @Transactional
-    open fun withdraw(accountId: Long, tx: WithdrawalTxDTO): TransactionDTO {
+    open fun transaction(accountId: Long, tx: Transaction): TransactionDTO {
         val acc = getAccount(accountId)
+        var amount
 
-        val transaction = mapper.map(tx, WithdrawalTx::class.java)
+        val transaction = when(tx) {
+            is WithdrawalTxDTO -> {
+                mapper.map(tx, WithdrawalTx::class.java)
+                amount = convertToCurrency(
+                        transaction.amount,
+                        transaction.currency,
+                        acc.currency)
+            }
+            is DepositTxDTO -> {
+                mapper.map(tx, DepositTx::class.java)
+                amount = convertToCurrency(
+                        transaction.amount,
+                        transaction.currency,
+                        acc.currency)
+            }
+            else -> throw ApiException("Unsupported transaction type submitted")
+        }
+
         transaction.src = acc
 
-        val amount = convertToCurrency(
-                transaction.amount,
-                transaction.currency,
-                acc.currency)
+
 
         return tx.id?.let {
             val oldTx = transactionRepository.findById(tx.id).orElse(null)
