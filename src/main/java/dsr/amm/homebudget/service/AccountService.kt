@@ -19,17 +19,16 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.time.OffsetDateTime
 import java.util.*
 import javax.persistence.EntityManagerFactory
-import javax.persistence.LockModeType
 
 @Service
 open class AccountService @Autowired constructor(
         open val entityManagerFactory: EntityManagerFactory,
         open val repository: AccountRepository,
         open val currencyRepository: CurrencyRepository,
-        open val withdrawalTxRepository: TransactionRepository<WithdrawalTx>,
         open val depositRepo: TransactionRepository<DepositTx>,
         open val transactionRepository: TransactionRepository<Transaction>,
         open val authService: AuthService,
@@ -96,21 +95,62 @@ open class AccountService @Autowired constructor(
         val acc = getAccount(accountId)
 
         val transaction = mapper.map(tx, WithdrawalTx::class.java)
-        transaction.createDate = OffsetDateTime.now()
         transaction.src = acc
 
-        val value = acc.currentValue
+        val amount = convertToCurrency(
+                transaction.amount,
+                transaction.currency,
+                acc.currency)
 
-        val amount = convertToCurrency(transaction.amount, transaction.currency, acc.currency)
+        return tx.id?.let {
+            val oldTx = transactionRepository.findById(tx.id).orElse(null)
+                    ?: throw NotFoundException("No such transaction found")
 
-        val newValue = value.subtract(amount)
-        acc.currentValue = newValue
-        transaction.newValue = newValue
+            transaction.createDate = oldTx.createDate
+            val trx = transactionRepository.findLastEarlierThan(acc, oldTx.createDate)
+            val value = trx?.newValue ?: 0.0.toBigDecimal()
 
-        val txResult = withdrawalTxRepository.save(transaction)
-        repository.save(acc)
+            val newValue = value.subtract(amount)
+            acc.currentValue = newValue
+            transaction.newValue = newValue
 
-        return mapper.map(txResult, TransactionDTO::class.java)
+            val txResult = transactionRepository.save(transaction)
+
+            val updatedTxList = transactionRepository.findAllLaterThan(Pageable.unpaged(), acc, oldTx.createDate)
+                    .iterator()
+                    .asSequence()
+                    .toList()
+                    .updateTransactionsValues(txResult.newValue)
+
+            transactionRepository.saveAll(updatedTxList)
+            acc.currentValue = updatedTxList.last().newValue
+            repository.save(acc)
+
+            mapper.map(txResult, TransactionDTO::class.java)
+        } ?: {
+            val functionCreateTx = {
+                val value = acc.currentValue
+
+                transaction.createDate = OffsetDateTime.now()
+                val newValue = value.subtract(amount)
+                acc.currentValue = newValue
+                transaction.newValue = newValue
+
+                val txResult = transactionRepository.save(transaction)
+                repository.save(acc)
+
+                mapper.map(txResult, TransactionDTO::class.java)
+            }
+            transaction.createDate?.let {
+                transactionRepository.findLastByAccount(acc)?.let { lastTx ->
+                    if (it.isAfter(lastTx.createDate))
+                        functionCreateTx.invoke()
+                    else {
+                        TODO("update account and transaction values")
+                    }
+                } ?: functionCreateTx.invoke()
+            } ?: functionCreateTx.invoke()
+        }.invoke()
     }
 
     private fun getAccount(accountId: Long, needLock: Boolean = true): Account {
@@ -161,5 +201,24 @@ open class AccountService @Autowired constructor(
         val account = getAccount(accountId, false)
         // FIXME change deletion logic
         transactionRepository.deleteById(account, transactionId)
+    }
+
+    private fun List<Transaction>.updateTransactionsValues(firstValue: BigDecimal): List<Transaction> {
+        var currentValue: BigDecimal = firstValue
+        return this.map {
+            when (it) {
+                is DepositTx -> {
+                    currentValue += it.amount
+                    it.newValue = currentValue
+                    it
+                }
+                is WithdrawalTx -> {
+                    currentValue -= it.amount
+                    it.newValue = currentValue
+                    it
+                }
+                else -> TODO("Create Exception for Unsupported Transaction type")
+            }
+        }
     }
 }
