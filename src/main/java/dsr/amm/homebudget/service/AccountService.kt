@@ -64,52 +64,34 @@ open class AccountService @Autowired constructor(
         return mapper.map(res, AccountDTO::class.java)
     }
 
-    @Transactional
-    open fun deposit(accountId: Long, tx: DepositTxDTO): TransactionDTO {
-        val account = getAccount(accountId)
-        val transaction = mapper.map(tx, DepositTx::class.java)
-        transaction.createDate = OffsetDateTime.now()
-        transaction.src = account
-
-        val value = account.currentValue
-        val amount = convertToCurrency(
-                transaction.amount,
-                transaction.currency,
-                account.currency)
-
-        val newValue = value.add(amount)
-        account.currentValue = newValue
-        transaction.newValue = newValue
-
-        val txResult = transactionRepository.save(transaction)
-        repository.save(account)
-
-        return mapper.map(txResult, TransactionDTO::class.java)
-    }
-
     private fun getCurrency(currency: CurrencyIdDTO) = currencyRepository
             .findById(currency.code)
             .orElse(null) ?: throw NotFoundException("No such currency found")
 
     @Transactional
-    open fun transaction(accountId: Long, tx: Transaction): TransactionDTO {
+    open fun transaction(accountId: Long, tx: TransactionDTO): TransactionDTO {
         val acc = getAccount(accountId)
-        var amount
+        val amount: BigDecimal
+        val calcNewValue: (v: BigDecimal, a: BigDecimal) -> BigDecimal
 
-        val transaction = when(tx) {
+        val transaction = when (tx) {
             is WithdrawalTxDTO -> {
-                mapper.map(tx, WithdrawalTx::class.java)
+                val it = mapper.map(tx, WithdrawalTx::class.java)
                 amount = convertToCurrency(
-                        transaction.amount,
-                        transaction.currency,
+                        it.amount,
+                        it.currency,
                         acc.currency)
+                calcNewValue = { v: BigDecimal, a: BigDecimal -> v.subtract(a) }
+                it
             }
             is DepositTxDTO -> {
-                mapper.map(tx, DepositTx::class.java)
+                val it = mapper.map(tx, DepositTx::class.java)
                 amount = convertToCurrency(
-                        transaction.amount,
-                        transaction.currency,
+                        it.amount,
+                        it.currency,
                         acc.currency)
+                calcNewValue = { v: BigDecimal, a: BigDecimal -> v.add(a) }
+                it
             }
             else -> throw ApiException("Unsupported transaction type submitted")
         }
@@ -125,7 +107,7 @@ open class AccountService @Autowired constructor(
             transaction.createDate = oldTx.createDate
             val value = transactionRepository.findLastEarlierThan(acc, oldTx.createDate)?.newValue ?: 0.0.toBigDecimal()
 
-            val newValue = value.subtract(amount)
+            val newValue = calcNewValue.invoke(value, amount)
             acc.currentValue = newValue
             transaction.newValue = newValue
 
@@ -147,7 +129,7 @@ open class AccountService @Autowired constructor(
                 val value = acc.currentValue
 
                 transaction.createDate = OffsetDateTime.now()
-                val newValue = value.subtract(amount)
+                val newValue = calcNewValue.invoke(value, amount)
                 acc.currentValue = newValue
                 transaction.newValue = newValue
 
@@ -164,7 +146,7 @@ open class AccountService @Autowired constructor(
                         val value = transactionRepository.findLastEarlierThan(acc, transaction.createDate)?.newValue
                                 ?: 0.0.toBigDecimal()
 
-                        val newValue = value.subtract(amount)
+                        val newValue = calcNewValue.invoke(value, amount)
                         acc.currentValue = newValue
                         transaction.newValue = newValue
 

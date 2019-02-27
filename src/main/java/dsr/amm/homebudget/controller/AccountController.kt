@@ -1,15 +1,11 @@
 package dsr.amm.homebudget.controller
 
-import dsr.amm.homebudget.controller.exception.ApiException
 import dsr.amm.homebudget.data.dto.*
-import dsr.amm.homebudget.data.entity.tx.DepositTx
-import dsr.amm.homebudget.data.entity.tx.WithdrawalTx
 import dsr.amm.homebudget.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.format.annotation.DateTimeFormat
-import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 import javax.validation.Valid

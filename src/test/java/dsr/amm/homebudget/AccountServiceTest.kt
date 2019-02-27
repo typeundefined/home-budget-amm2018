@@ -95,7 +95,7 @@ open class AccountServiceTest {
         val dto = AccountNewDTO().also { it.currency = currId("RUB") }
 
         val acc = accountService!!.create(dto)
-        accountService.deposit(acc.id!!, deposit(14.0))
+        accountService.transaction(acc.id!!, deposit(14.0))
         val accList = accountService.myAccounts
 
         assertEquals(accList[0].currentValue, BigDecimal.valueOf(14.0))
@@ -114,8 +114,8 @@ open class AccountServiceTest {
         val dto = AccountNewDTO().also { it.currency = currId("RUB") }
 
         val acc = accountService!!.create(dto)
-        accountService.deposit(acc.id!!, deposit(20.0))
-        accountService.withdraw(acc.id!!, withdraw(11.0))
+        accountService.transaction(acc.id!!, deposit(20.0))
+        accountService.transaction(acc.id!!, withdraw(11.0))
         val accList = accountService.myAccounts
 
         assertEquals(accList[0].currentValue, BigDecimal.valueOf(9.0))
@@ -139,12 +139,12 @@ open class AccountServiceTest {
         val dto = AccountNewDTO().also { it.currency = currId("RUB") }
 
         val acc = accountService!!.create(dto)
-        accountService.deposit(acc.id!!, deposit(20.0))
-        accountService.deposit(acc.id!!, deposit(21.0))
-        accountService.deposit(acc.id!!, deposit(22.0))
-        accountService.withdraw(acc.id!!, insertWithdraw(11.0, OffsetDateTime.now().plusDays(1)))
-        accountService.withdraw(acc.id!!, insertWithdraw(12.0, OffsetDateTime.now().minusDays(2)))
-        accountService.withdraw(acc.id!!, insertWithdraw(13.0, OffsetDateTime.now()))
+        accountService.transaction(acc.id!!, deposit(20.0))
+        accountService.transaction(acc.id!!, deposit(21.0))
+        accountService.transaction(acc.id!!, deposit(22.0))
+        accountService.transaction(acc.id!!, insertWithdraw(11.0, OffsetDateTime.now().plusDays(1)))
+        accountService.transaction(acc.id!!, insertWithdraw(12.0, OffsetDateTime.now().minusDays(2)))
+        accountService.transaction(acc.id!!, insertWithdraw(13.0, OffsetDateTime.now()))
         val accList = accountService.myAccounts
 
         assertEquals(accList[0].currentValue, BigDecimal.valueOf(27.0))
@@ -175,12 +175,12 @@ open class AccountServiceTest {
         val withdraw3 = withdraw(30.0)
 
         val acc = accountService!!.create(dto)
-        accountService.deposit(acc.id!!, deposit1)
-        withdraw1.id = accountService.withdraw(acc.id!!, withdraw1).id
-        accountService.withdraw(acc.id!!, withdraw2)
-        accountService.deposit(acc.id!!, deposit2)
-        withdraw3.id = accountService.withdraw(acc.id!!, withdraw3).id
-        accountService.deposit(acc.id!!, deposit3)
+        accountService.transaction(acc.id!!, deposit1)
+        withdraw1.id = accountService.transaction(acc.id!!, withdraw1).id
+        accountService.transaction(acc.id!!, withdraw2)
+        accountService.transaction(acc.id!!, deposit2)
+        withdraw3.id = accountService.transaction(acc.id!!, withdraw3).id
+        accountService.transaction(acc.id!!, deposit3)
         val accList = accountService.myAccounts
 
         assertEquals(accList[0].currentValue, BigDecimal.valueOf(540.0))
@@ -198,8 +198,8 @@ open class AccountServiceTest {
 
         withdraw1.amount = 40.0.toBigDecimal()
         withdraw3.amount = 60.0.toBigDecimal()
-        accountService.withdraw(acc.id!!, withdraw1)
-        accountService.withdraw(acc.id!!, withdraw3)
+        accountService.transaction(acc.id!!, withdraw1)
+        accountService.transaction(acc.id!!, withdraw3)
 
         txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
                 .iterator().asSequence().toList()
