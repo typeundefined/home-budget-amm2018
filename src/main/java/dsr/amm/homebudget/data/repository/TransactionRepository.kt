@@ -23,7 +23,7 @@ interface TransactionRepository<T : Transaction> : PagingAndSortingRepository<T,
     @Query("from #{#entityName} tx where src = ?1 and id = ?2")
     fun findByAccountAndId(account: Account, id: Long): Account?
 
-    @Query("SELECT * from TRANSACTION where src_id = ?1 order by create_Date limit 1", nativeQuery = true)
+    @Query("SELECT * from TRANSACTION where src_id = ?1 order by create_Date, amount, new_value, reason desc limit 1", nativeQuery = true)
     fun findLastByAccount(account: Account): T?
 
     @Query("from #{#entityName} tx where src = ?1 and tx.createDate between ?2 and ?3 order by tx.createDate")
@@ -35,10 +35,10 @@ interface TransactionRepository<T : Transaction> : PagingAndSortingRepository<T,
     @Query("from #{#entityName} tx where src = ?1 and tx.createDate <= ?2 order by tx.createDate")
     fun findAllByAccountWithTimeFilterTo(pageable: Pageable, account: Account, to: OffsetDateTime): Page<T>
 
-    @Query("SELECT * from TRANSACTION where src_id = ?1 and create_Date < ?2 order by create_Date desc limit 1", nativeQuery = true)
+    @Query("SELECT * from TRANSACTION where src_id = ?1 and create_Date < ?2 order by create_Date, amount, new_value, reason desc limit 1", nativeQuery = true)
     fun findLastEarlierThan(account: Account, earlierThan: OffsetDateTime): T?
 
-    @Query("SELECT * from TRANSACTION where src_id = ?1 and create_Date > ?2 order by create_Date", nativeQuery = true)
+    @Query("SELECT * from TRANSACTION where src_id = ?1 and create_Date > ?2 order by create_Date, amount, new_value, reason", nativeQuery = true)
     fun findAllLaterThan(pageable: Pageable, account: Account, from: OffsetDateTime): Page<T>
 
     @Modifying

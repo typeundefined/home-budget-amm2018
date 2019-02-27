@@ -113,14 +113,19 @@ open class AccountService @Autowired constructor(
 
             val txResult = transactionRepository.save(transaction)
 
-            val updatedTxList = transactionRepository.findAllLaterThan(Pageable.unpaged(), acc, oldTx.createDate)
+            val updatedTxList = transactionRepository
+                    .findAllLaterThan(Pageable.unpaged(), acc, oldTx.createDate)
                     .iterator()
                     .asSequence()
                     .toList()
                     .updateTransactionsValues(txResult.newValue)
 
-            transactionRepository.saveAll(updatedTxList)
-            acc.currentValue = updatedTxList.last().newValue
+            if (updatedTxList.isNotEmpty()) {
+                transactionRepository.saveAll(updatedTxList)
+                acc.currentValue = updatedTxList.last().newValue
+            } else
+                acc.currentValue = txResult.newValue
+
             repository.save(acc)
 
             mapper.map(txResult, TransactionDTO::class.java)
@@ -158,14 +163,20 @@ open class AccountService @Autowired constructor(
                                 .toList()
                                 .updateTransactionsValues(txResult.newValue)
 
-                        transactionRepository.saveAll(updatedTxList)
-                        acc.currentValue = updatedTxList.last().newValue
+                        if (updatedTxList.isNotEmpty()) {
+                            transactionRepository.saveAll(updatedTxList)
+                            acc.currentValue = updatedTxList.last().newValue
+                        } else
+                            acc.currentValue = txResult.newValue
+
                         repository.save(acc)
 
                         mapper.map(txResult, TransactionDTO::class.java)
                     }
-                } ?: functionCreateTx.invoke()
-            } ?: functionCreateTx.invoke()
+                }
+                        ?: functionCreateTx.invoke()
+            }
+                    ?: functionCreateTx.invoke()
         }.invoke()
     }
 

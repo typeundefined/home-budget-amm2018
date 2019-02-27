@@ -98,7 +98,7 @@ open class AccountServiceTest {
         accountService.transaction(acc.id!!, deposit(14.0))
         val accList = accountService.myAccounts
 
-        assertEquals(accList[0].currentValue, BigDecimal.valueOf(14.0))
+        assertEquals(BigDecimal.valueOf(14.0), accList[0].currentValue)
 
         val txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
         assertEquals(txHistory.totalElements, 1L)
@@ -118,7 +118,7 @@ open class AccountServiceTest {
         accountService.transaction(acc.id!!, withdraw(11.0))
         val accList = accountService.myAccounts
 
-        assertEquals(accList[0].currentValue, BigDecimal.valueOf(9.0))
+        assertEquals(BigDecimal.valueOf(9.0), accList[0].currentValue)
 
         val txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
         assertEquals(txHistory.totalElements, 2L)
@@ -147,12 +147,12 @@ open class AccountServiceTest {
         accountService.transaction(acc.id!!, insertWithdraw(13.0, OffsetDateTime.now()))
         val accList = accountService.myAccounts
 
-        assertEquals(accList[0].currentValue, BigDecimal.valueOf(27.0))
+        assertEquals(BigDecimal.valueOf(27.0), accList[0].currentValue)
 
         val txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
                 .iterator().asSequence().toList()
 
-        assertEquals(txHistory.size, 6)
+        assertEquals(6, txHistory.size)
         assertEquals((-12.0).toBigDecimal(), txHistory[0].newValue)
         assertEquals(8.0.toBigDecimal(), txHistory[1].newValue)
         assertEquals(29.0.toBigDecimal(), txHistory[2].newValue)
@@ -183,12 +183,12 @@ open class AccountServiceTest {
         accountService.transaction(acc.id!!, deposit3)
         val accList = accountService.myAccounts
 
-        assertEquals(accList[0].currentValue, BigDecimal.valueOf(540.0))
+        assertEquals(BigDecimal.valueOf(540.0), accList[0].currentValue)
 
         var txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
                 .iterator().asSequence().toList()
 
-        assertEquals(txHistory.size, 6)
+        assertEquals(6, txHistory.size)
         assertEquals(100.0.toBigDecimal(), txHistory[0].newValue)
         assertEquals(90.0.toBigDecimal(), txHistory[1].newValue)
         assertEquals(70.0.toBigDecimal(), txHistory[2].newValue)
@@ -204,7 +204,91 @@ open class AccountServiceTest {
         txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
                 .iterator().asSequence().toList()
 
-        assertEquals(txHistory.size, 6)
+        assertEquals(6, txHistory.size)
+        assertEquals(100.0.toBigDecimal(), txHistory[0].newValue)
+        assertEquals(60.0.toBigDecimal(), txHistory[1].newValue)
+        assertEquals(40.0.toBigDecimal(), txHistory[2].newValue)
+        assertEquals(240.0.toBigDecimal(), txHistory[3].newValue)
+        assertEquals(180.0.toBigDecimal(), txHistory[4].newValue)
+        assertEquals(480.0.toBigDecimal(), txHistory[5].newValue)
+
+        assertEquals(BigDecimal.valueOf(480.0), accountService.myAccounts[0].currentValue)
+    }
+
+    @Test
+    @Transactional
+    @WithUserDetails("jpetrucci")
+    open fun `insert deposit transaction`() {
+        currencyService!!.create(currency("RUB"))
+        val dto = AccountNewDTO().also { it.currency = currId("RUB") }
+
+        val acc = accountService!!.create(dto)
+        accountService.transaction(acc.id!!, deposit(200.0))
+        accountService.transaction(acc.id!!, insertDeposit(2000.0, OffsetDateTime.MIN))
+        accountService.transaction(acc.id!!, insertDeposit(800.0, OffsetDateTime.MIN))
+        accountService.transaction(acc.id!!, deposit(1000.0))
+        accountService.transaction(acc.id!!, insertDeposit(1500.0, OffsetDateTime.MIN))
+        accountService.transaction(acc.id!!, withdraw(5000.0))
+        val accList = accountService.myAccounts
+
+        val txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
+                .iterator().asSequence().toList()
+
+        assertEquals(6, txHistory.size)
+        assertEquals(2000.0.toBigDecimal(), txHistory[0].newValue)
+        assertEquals(2800.0.toBigDecimal(), txHistory[1].newValue)
+        assertEquals(4300.0.toBigDecimal(), txHistory[2].newValue)
+        assertEquals(4500.0.toBigDecimal(), txHistory[3].newValue)
+        assertEquals(5500.0.toBigDecimal(), txHistory[4].newValue)
+        assertEquals(500.0.toBigDecimal(), txHistory[5].newValue)
+
+        assertEquals(BigDecimal.valueOf(500.0), accList[0].currentValue)
+    }
+
+    @Test
+    @Transactional
+    @WithUserDetails("jpetrucci")
+    open fun `update deposit transaction`() {
+        currencyService!!.create(currency("RUB"))
+        val dto = AccountNewDTO().also { it.currency = currId("RUB") }
+        val deposit1 = deposit(100.0)
+        val deposit2 = deposit(200.0)
+        val deposit3 = deposit(300.0)
+        val withdraw1 = withdraw(10.0)
+        val withdraw2 = withdraw(20.0)
+        val withdraw3 = withdraw(30.0)
+
+        val acc = accountService!!.create(dto)
+        accountService.transaction(acc.id!!, deposit1)
+        withdraw1.id = accountService.transaction(acc.id!!, withdraw1).id
+        accountService.transaction(acc.id!!, withdraw2)
+        accountService.transaction(acc.id!!, deposit2)
+        withdraw3.id = accountService.transaction(acc.id!!, withdraw3).id
+        accountService.transaction(acc.id!!, deposit3)
+        val accList = accountService.myAccounts
+
+        assertEquals(BigDecimal.valueOf(540.0), accList[0].currentValue)
+
+        var txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
+                .iterator().asSequence().toList()
+
+        assertEquals(6, txHistory.size)
+        assertEquals(100.0.toBigDecimal(), txHistory[0].newValue)
+        assertEquals(90.0.toBigDecimal(), txHistory[1].newValue)
+        assertEquals(70.0.toBigDecimal(), txHistory[2].newValue)
+        assertEquals(270.0.toBigDecimal(), txHistory[3].newValue)
+        assertEquals(240.0.toBigDecimal(), txHistory[4].newValue)
+        assertEquals(540.0.toBigDecimal(), txHistory[5].newValue)
+
+        withdraw1.amount = 40.0.toBigDecimal()
+        withdraw3.amount = 60.0.toBigDecimal()
+        accountService.transaction(acc.id!!, withdraw1)
+        accountService.transaction(acc.id!!, withdraw3)
+
+        txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
+                .iterator().asSequence().toList()
+
+        assertEquals(6, txHistory.size)
         assertEquals(100.0.toBigDecimal(), txHistory[0].newValue)
         assertEquals(60.0.toBigDecimal(), txHistory[1].newValue)
         assertEquals(40.0.toBigDecimal(), txHistory[2].newValue)
@@ -213,7 +297,6 @@ open class AccountServiceTest {
         assertEquals(480.0.toBigDecimal(), txHistory[5].newValue)
 
         assertEquals(accountService.myAccounts[0].currentValue, BigDecimal.valueOf(480.0))
-
     }
 
     private fun withdraw(`val`: Double) = WithdrawalTxDTO().also { dto ->
