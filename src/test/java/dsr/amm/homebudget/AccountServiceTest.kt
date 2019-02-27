@@ -12,11 +12,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.test.context.support.WithUserDetails
 import org.springframework.test.annotation.Commit
@@ -25,12 +23,11 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.transaction.annotation.Transactional
 
 import java.math.BigDecimal
-import java.util.ArrayList
-import java.util.Optional
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import java.time.OffsetDateTime
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [HomeBudgetApplication::class, TestConfig::class])
@@ -134,8 +131,59 @@ open class AccountServiceTest {
         assertTrue(tx is WithdrawalTxDTO)
     }
 
-    private fun withdraw(v: Double) = WithdrawalTxDTO().also { dto ->
-        dto.amount = BigDecimal.valueOf(v)
+    @Test
+    @Transactional
+    @WithUserDetails("jpetrucci")
+    open fun `update withdraw transaction`() {
+        currencyService!!.create(currency("RUB"))
+        val dto = AccountNewDTO().also { it.currency = currId("RUB") }
+        val deposit1 = deposit(100.0)
+        val deposit2 = deposit(200.0)
+        val deposit3 = deposit(300.0)
+        val withdraw1 = withdraw(10.0)
+        val withdraw2 = withdraw(20.0)
+        val withdraw3 = withdraw(30.0)
+
+        val acc = accountService!!.create(dto)
+        accountService.deposit(acc.id!!, deposit1)
+        withdraw1.id = accountService.withdraw(acc.id!!, withdraw1).id
+        accountService.withdraw(acc.id!!, withdraw2)
+        accountService.deposit(acc.id!!, deposit2)
+        withdraw3.id = accountService.withdraw(acc.id!!, withdraw3).id
+        accountService.deposit(acc.id!!, deposit3)
+        val accList = accountService.myAccounts
+
+        assertEquals(accList[0].currentValue, BigDecimal.valueOf(540.0))
+
+        var txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!).iterator().asSequence().toList()
+        assertEquals(txHistory.size, 6)
+        assertEquals(100.0.toBigDecimal(), txHistory[0].newValue)
+        assertEquals(90.0.toBigDecimal(), txHistory[1].newValue)
+        assertEquals(70.0.toBigDecimal(), txHistory[2].newValue)
+        assertEquals(270.0.toBigDecimal(), txHistory[3].newValue)
+        assertEquals(240.0.toBigDecimal(), txHistory[4].newValue)
+        assertEquals(540.0.toBigDecimal(), txHistory[5].newValue)
+
+        withdraw1.amount = 40.0.toBigDecimal()
+        withdraw3.amount = 60.0.toBigDecimal()
+        accountService.withdraw(acc.id!!, withdraw1)
+        accountService.withdraw(acc.id!!, withdraw3)
+
+        txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!).iterator().asSequence().toList()
+        assertEquals(txHistory.size, 6)
+        assertEquals(100.0.toBigDecimal(), txHistory[0].newValue)
+        assertEquals(60.0.toBigDecimal(), txHistory[1].newValue)
+        assertEquals(40.0.toBigDecimal(), txHistory[2].newValue)
+        assertEquals(240.0.toBigDecimal(), txHistory[3].newValue)
+        assertEquals(180.0.toBigDecimal(), txHistory[4].newValue)
+        assertEquals(480.0.toBigDecimal(), txHistory[5].newValue)
+
+        assertEquals(accountService.myAccounts[0].currentValue, BigDecimal.valueOf(480.0))
+
+    }
+
+    private fun withdraw(`val`: Double) = WithdrawalTxDTO().also { dto ->
+        dto.amount = BigDecimal.valueOf(`val`)
         dto.currency = currId("RUB")
         dto.reason = "reason"
     }
