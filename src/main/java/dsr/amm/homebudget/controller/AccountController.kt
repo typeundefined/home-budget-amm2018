@@ -52,7 +52,7 @@ open class AccountController @Autowired constructor(open val accountService: Acc
     @RequestMapping(value = ["/{accountId}/transactions/{transactionId}"], method = [DELETE])
     fun deleteTransaction(
             @PathVariable("accountId") accountId: Long,
-            @PathVariable("transactionId") transactionId: Long) {
+            @PathVariable("transactionId") transactionId: Long
+    ): TransactionDTO =
         accountService.deleteTransaction(accountId, transactionId)
-    }
 }

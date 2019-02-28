@@ -108,7 +108,6 @@ open class AccountService @Autowired constructor(
             val value = transactionRepository.findLastEarlierThan(acc, oldTx.createDate)?.newValue ?: 0.0.toBigDecimal()
 
             val newValue = calcNewValue.invoke(value, amount)
-            acc.currentValue = newValue
             transaction.newValue = newValue
 
             val txResult = transactionRepository.save(transaction)
@@ -153,7 +152,6 @@ open class AccountService @Autowired constructor(
                                 ?: 0.0.toBigDecimal()
 
                         val newValue = calcNewValue.invoke(value, amount)
-                        acc.currentValue = newValue
                         transaction.newValue = newValue
 
                         val txResult = transactionRepository.save(transaction)
@@ -175,10 +173,8 @@ open class AccountService @Autowired constructor(
 
                         mapper.map(txResult, TransactionDTO::class.java)
                     }
-                }
-                        ?: functionCreateTx.invoke()
-            }
-                    ?: functionCreateTx.invoke()
+                } ?: functionCreateTx.invoke()
+            } ?: functionCreateTx.invoke()
         }.invoke()
     }
 
@@ -226,10 +222,33 @@ open class AccountService @Autowired constructor(
 
 
     @Transactional
-    open fun deleteTransaction(accountId: Long, transactionId: Long) {
-        val account = getAccount(accountId, false)
-        // FIXME change deletion logic
-        transactionRepository.deleteById(account, transactionId)
+    open fun deleteTransaction(accountId: Long, transactionId: Long): TransactionDTO {
+        val acc = getAccount(accountId)
+
+        val deletedTx = transactionRepository.findById(transactionId).orElse(null)
+                ?: throw NotFoundException("No such transaction found")
+
+        transactionRepository.deleteById(acc, transactionId)
+
+        val newValue = transactionRepository.findLastEarlierThan(acc, deletedTx.createDate)?.newValue
+                ?: 0.0.toBigDecimal()
+
+        val updatedTxList = transactionRepository
+                .findAllLaterThan(Pageable.unpaged(), acc, deletedTx.createDate)
+                .iterator()
+                .asSequence()
+                .toList()
+                .updateTransactionsValues(newValue)
+
+        if (updatedTxList.isNotEmpty()) {
+            transactionRepository.saveAll(updatedTxList)
+            acc.currentValue = updatedTxList.last().newValue
+        } else
+            acc.currentValue = newValue
+
+        repository.save(acc)
+
+        return mapper.map(deletedTx, TransactionDTO::class.java)
     }
 
     private fun List<Transaction>.updateTransactionsValues(firstValue: BigDecimal): List<Transaction> {
