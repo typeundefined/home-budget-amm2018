@@ -4,6 +4,7 @@ import dsr.amm.homebudget.OrikaMapper
 import dsr.amm.homebudget.controller.exception.ApiException
 import dsr.amm.homebudget.controller.exception.ForbiddenException
 import dsr.amm.homebudget.controller.exception.NotFoundException
+import dsr.amm.homebudget.controller.exception.TransactionTypeNotSupported
 import dsr.amm.homebudget.data.dto.*
 import dsr.amm.homebudget.data.entity.Account
 import dsr.amm.homebudget.data.entity.Currency
@@ -265,7 +266,7 @@ open class AccountService @Autowired constructor(
                     it.newValue = currentValue
                     it
                 }
-                else -> TODO("Create Exception for Unsupported Transaction type")
+                else -> throw TransactionTypeNotSupported("Unsupported Transaction type")
             }
         }
     }
