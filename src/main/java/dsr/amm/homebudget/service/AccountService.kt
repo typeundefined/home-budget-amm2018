@@ -118,6 +118,7 @@ open class AccountService @Autowired constructor(
                     .iterator()
                     .asSequence()
                     .toList()
+                    .filter { it.id != transaction.id }
                     .updateTransactionsValues(txResult.newValue)
 
             if (updatedTxList.isNotEmpty()) {
@@ -161,6 +162,7 @@ open class AccountService @Autowired constructor(
                                 .iterator()
                                 .asSequence()
                                 .toList()
+                                .filter { it.id != transaction.id }
                                 .updateTransactionsValues(txResult.newValue)
 
                         if (updatedTxList.isNotEmpty()) {
