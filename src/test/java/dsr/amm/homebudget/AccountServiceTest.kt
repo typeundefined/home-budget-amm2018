@@ -2,7 +2,6 @@ package dsr.amm.homebudget
 
 import dsr.amm.homebudget.controller.exception.NotFoundException
 import dsr.amm.homebudget.data.dto.*
-import dsr.amm.homebudget.data.entity.Account
 import dsr.amm.homebudget.data.repository.AccountRepository
 import dsr.amm.homebudget.service.AccountService
 import dsr.amm.homebudget.service.AuthService
@@ -337,6 +336,68 @@ open class AccountServiceTest {
         assertEquals(170.0.toBigDecimal(), txHistory[3].newValue)
 
         assertEquals(accountService.myAccounts[0].currentValue, BigDecimal.valueOf(170.0))
+    }
+
+    @Test
+    @Transactional
+    @WithUserDetails("jpetrucci")
+    open fun `update, delete and insert transactions`() {
+        currencyService!!.create(currency("RUB"))
+        val dto = AccountNewDTO().also { it.currency = currId("RUB") }
+        val deposit1 = deposit(2.0)
+        val deposit2 = deposit(4.0)
+        val deposit3 = insertDeposit(7.0, OffsetDateTime.now().minusHours(2))
+        val depositUpd4 = deposit(9.0)
+        val withdraw1 = insertWithdraw(1.0, OffsetDateTime.now().minusHours(1))
+        val withdrawUpd2 = withdraw(3.0)
+        val withdraw3 = withdraw(5.0)
+        val withdraw4 = withdraw(8.0)
+
+        val acc = accountService!!.create(dto)
+        val deleteDepositId = accountService.transaction(acc.id!!, deposit1).id
+        accountService.transaction(acc.id!!, deposit2)
+        accountService.transaction(acc.id!!, deposit3)
+        depositUpd4.id = accountService.transaction(acc.id!!, depositUpd4).id
+        accountService.transaction(acc.id!!, withdraw1)
+        withdrawUpd2.id = accountService.transaction(acc.id!!, withdrawUpd2).id
+        val deleteWithdrawId = accountService.transaction(acc.id!!, withdraw3).id
+        accountService.transaction(acc.id!!, withdraw4)
+        val accList = accountService.myAccounts
+
+        assertEquals(BigDecimal.valueOf(5.0), accList[0].currentValue)
+
+        var txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
+                .iterator().asSequence().toList()
+
+        assertEquals(8, txHistory.size)
+        assertEquals(7.0.toBigDecimal(), txHistory[0].newValue)
+        assertEquals(6.0.toBigDecimal(), txHistory[1].newValue)
+        assertEquals(8.0.toBigDecimal(), txHistory[2].newValue)
+        assertEquals(12.0.toBigDecimal(), txHistory[3].newValue)
+        assertEquals(21.0.toBigDecimal(), txHistory[4].newValue)
+        assertEquals(18.0.toBigDecimal(), txHistory[5].newValue)
+        assertEquals(13.0.toBigDecimal(), txHistory[6].newValue)
+        assertEquals(5.0.toBigDecimal(), txHistory[7].newValue)
+
+        withdrawUpd2.amount = 2.0.toBigDecimal()
+        depositUpd4.amount = 11.0.toBigDecimal()
+        accountService.deleteTransaction(acc.id!!, deleteWithdrawId)
+        accountService.deleteTransaction(acc.id!!, deleteDepositId)
+        accountService.transaction(acc.id!!, withdrawUpd2)
+        accountService.transaction(acc.id!!, depositUpd4)
+
+        txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.id!!)
+                .iterator().asSequence().toList()
+
+        assertEquals(6, txHistory.size)
+        assertEquals(7.0.toBigDecimal(), txHistory[0].newValue)
+        assertEquals(6.0.toBigDecimal(), txHistory[1].newValue)
+        assertEquals(10.0.toBigDecimal(), txHistory[2].newValue)
+        assertEquals(21.0.toBigDecimal(), txHistory[3].newValue)
+        assertEquals(19.0.toBigDecimal(), txHistory[4].newValue)
+        assertEquals(11.0.toBigDecimal(), txHistory[5].newValue)
+
+        assertEquals(accountService.myAccounts[0].currentValue, BigDecimal.valueOf(11.0))
     }
 
     private fun withdraw(`val`: Double) = WithdrawalTxDTO().also { dto ->
