@@ -94,7 +94,7 @@ open class AccountService @Autowired constructor(
                 calcNewValue = { v: BigDecimal, a: BigDecimal -> v.add(a) }
                 it
             }
-            else -> throw ApiException("Unsupported transaction type submitted")
+            else -> throw TransactionTypeNotSupported("Unsupported Transaction type")
         }
 
         transaction.src = acc
