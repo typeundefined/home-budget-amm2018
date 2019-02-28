@@ -106,10 +106,10 @@ public class AccountServiceTest {
         accountService.deposit(acc.getId(), deposit(14.0));
         List<AccountDTO> accList = accountService.getMyAccounts();
 
-        assertEquals(accList.get(0).getCurrentValue(), BigDecimal.valueOf(14.0));
+        assertEquals(BigDecimal.valueOf(14.0), accList.get(0).getCurrentValue());
 
         Page<TransactionDTO> txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.getId());
-        assertEquals(txHistory.getTotalElements(), 1L);
+        assertEquals(1L, txHistory.getTotalElements());
         TransactionDTO tx = txHistory.iterator().next();
         assertEquals("deposit", tx.getType());
     }
@@ -127,10 +127,10 @@ public class AccountServiceTest {
         accountService.withdraw(acc.getId(), withdraw(11.0));
         List<AccountDTO> accList = accountService.getMyAccounts();
 
-        assertEquals(accList.get(0).getCurrentValue(), BigDecimal.valueOf(9.0));
+        assertEquals(BigDecimal.valueOf(9.0), accList.get(0).getCurrentValue());
 
         Page<TransactionDTO> txHistory = accountService.getAccountTransactions(Pageable.unpaged(), acc.getId());
-        assertEquals(txHistory.getTotalElements(), 2L);
+        assertEquals(2L, txHistory.getTotalElements());
         TransactionDTO tx = txHistory
                 .stream()
                 .filter(t -> t.getType().equals("withdrawal"))
