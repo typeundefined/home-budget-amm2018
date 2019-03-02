@@ -19,7 +19,7 @@ import static javax.persistence.LockModeType.PESSIMISTIC_WRITE;
 public interface AccountRepository extends CrudRepository<Account, Long> {
     @Query("from Account a where a.id = ?1")
     @Lock(PESSIMISTIC_WRITE)
-    Optional<Account> findByIdForUpdate(Long id);
+    Account findByIdForUpdate(Long id);
 
     List<Account> findByOwner(Person p);
 }

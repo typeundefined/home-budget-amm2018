@@ -1,16 +1,19 @@
 buildscript {
-    ext {
-        springBootVersion = '2.0.5.RELEASE'
-    }
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
+	ext {
+		springBootVersion = '2.0.5.RELEASE'
+		kotlin_version = '1.3.21'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+	}
 }
 
 apply plugin: 'java'
+apply plugin: 'kotlin'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
@@ -19,19 +22,30 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 
 dependencies {
-    compile 'org.postgresql:postgresql:42.1.1'
-    compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.2'
-    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
-    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
-    implementation('org.springframework.boot:spring-boot-starter-security')
-    implementation('org.springframework.boot:spring-boot-starter-web')
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation('org.springframework.security:spring-security-test')
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+"
+
+	compile 'org.postgresql:postgresql:42.1.1'
+	compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.2'
+	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+	implementation('org.springframework.boot:spring-boot-starter-security')
+	implementation('org.springframework.boot:spring-boot-starter-web')
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation('org.springframework.security:spring-security-test')
 //    testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
     compile group: 'com.h2database', name: 'h2', version: '1.4.197'
+}
+
+
+compileKotlin {
+	kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+	kotlinOptions.jvmTarget = "1.8"
 }
