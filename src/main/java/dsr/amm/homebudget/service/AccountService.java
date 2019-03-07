@@ -47,6 +47,12 @@ public class AccountService {
         return mapper.mapAsList(accList, AccountDTO.class);
     }
 
+    @Transactional(readOnly = true)
+    public AccountDTO getAccountById(Long id) {
+        Account account = getAccount(id, false);
+        return mapper.map(account, AccountDTO.class);
+    }
+
     @Transactional
     public AccountDTO create(AccountNewDTO newAcc) {
         Account account = mapper.map(newAcc, Account.class);
