@@ -1,0 +1,273 @@
+openapi: 3.0.0
+servers:
+- description: Local server
+  url: http://localhost:8085/
+info:
+  description: |
+    Home budget API
+  version: 1.0.0
+  title: Home budget API
+
+paths:
+  /auth/register/:
+    post:
+      tags:
+      - 'аутентификация и авторизация'
+      summary: Регистрация с логином, паролем и полным именем
+      operationId: registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistationDTO'
+      responses:
+        '200':
+          description: Успешная регистрация
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/login/:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDTO'
+      tags:
+      - 'аутентификация и авторизация'
+      operationId: authLogin
+      summary: Получение токена с логином и паролем
+      responses:
+        '200':
+          description: Успешная авторизация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtResponseDTO'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+  /account:
+    get:
+      tags:
+      - 'аккаунты'
+      operationId: getMyAccounts
+      summary: Получить список аккаунтов
+      responses:
+        '200':
+          description: Список аккаунтов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/AccountDTO'
+        '403':
+          $ref: '#/components/responses/AuthenticationRequiredError'
+    post:
+      tags:
+      - 'аккаунты'
+      operationId: createAccount
+      summary: Создать аккаунт
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountNewDTO'
+      responses:
+        '200':
+          description: Аккаунт успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDTO'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationRequiredError'
+  /currency:
+    get:
+      tags:
+        - 'валюты'
+      operationId: getAllCurrencies
+      summary: Получить все доступные валюты
+      responses:
+        '200':
+          description: Список доступных валют
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CurrencyDTO'
+        '403':
+          $ref: '#/components/responses/AuthenticationRequiredError'
+    post:
+      tags:
+        - 'валюты'
+      operationId: createCurrency
+      summary: Создать новую валюту
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrencyDTO'
+      responses:
+        '200':
+          description: Валюта успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyDTO'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationRequiredError'
+
+components:
+  responses:
+    AuthenticationRequiredError:
+      description: Требуется аутентификация
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/APIError'
+          example:
+            error: Forbidden
+            message: Access Denied
+            path: '/'
+            status: 403
+            timestamp: '2018-12-08T13:54:15.265+0000'
+    ValidationError:
+      description: Ошибка валидации
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/APIError'
+          example:
+            error: Bad Request
+            message: 'Validation failed for object. Error count: 1'
+            path: '/'
+            status: 400
+            timestamp: '2018-12-08T13:54:15.265+0000'
+  schemas:
+    RegistationDTO:
+      properties:
+        username:
+          type: string
+          description: Логин
+        password:
+          type: string
+          description: Пароль
+        fullName:
+          type: string
+          description: Полное имя
+      required:
+      - username
+      - password
+    LoginDTO:
+      properties:
+        username:
+          type: string
+          description: Логин для входа
+        password:
+          type: string
+          description: Пароль
+      required:
+      - username
+      - password
+    JwtResponseDTO:
+      properties:
+        accessToken:
+          type: string
+          description: Токен
+          example: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTU0ND'
+        tokenType:
+          type: string
+          description: Тип токена
+          example: Bearer
+    AccountDTO:
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        description:
+          type: string
+        currency:
+          type: object
+          $ref: '#/components/schemas/CurrencyDTO'
+        createdDate:
+          type: string
+          format: date
+        currentValue:
+          type: number
+    AccountNewDTO:
+      properties:
+        name:
+          type: string
+          description: Имя
+        description:
+          type: string
+          description: Описание
+        currency:
+          type: object
+          $ref: '#/components/schemas/CurrencyIdDTO'
+      required:
+      - name
+      - currency
+    CurrencyIdDTO:
+      properties:
+        code:
+          type: string
+          description: Трёхбуквенный код валюты
+      required:
+      - code
+    CurrencyDTO:
+      properties:
+        code:
+          type: string
+          description: Трёхбуквенный код валюты
+        humanReadableName:
+          type: string
+          description: Название валюты
+      required:
+        - humanReadableName
+    TransactionDTO:
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        reason:
+          type: string
+        createDate:
+          type: string
+          format: 'date-time'
+        newValue:
+          type: number
+        category:
+          type: object
+    APIError:
+      properties:
+        error:
+          type: string
+          description: Название ошибки
+        errors:
+          type: array
+          description: Список ошибок
+        message:
+          type: string
+          description: Описание ошибки
+        path:
+          type: string
+          description: Путь API
+        status:
+          type: string
+          description: Статус
+        timestamp:
+          type: string
+          description: Дата и время
+          format: 'date-time'
