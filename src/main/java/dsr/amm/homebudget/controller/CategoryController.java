@@ -1,7 +1,6 @@
 package dsr.amm.homebudget.controller;
 
 import dsr.amm.homebudget.data.dto.CategoryDTO;
-import dsr.amm.homebudget.data.entity.Category;
 import dsr.amm.homebudget.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -9,30 +8,30 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * Created by rifia on 11/29/2018.
- */
-
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
 
     @Autowired
-    private CategoryService service;
+    CategoryService service;
 
     @RequestMapping(method = RequestMethod.GET)
     public List<CategoryDTO> getAll() {
-        return service.getCategories();
+        return service.getAll();
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public CategoryDTO getCategory(@PathVariable("id") long id) {
+        return service.getCategory(id);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public void create(@RequestBody @Valid CategoryDTO curr) {
-        service.create(curr);
+    public CategoryDTO postCategory(@RequestBody @Valid CategoryDTO categoryDTO) {
+            return service.save(categoryDTO);
     }
 
-
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable("id") Long id) {
+    public void deleteOne(@PathVariable("id") long id) {
         service.delete(id);
     }
 }

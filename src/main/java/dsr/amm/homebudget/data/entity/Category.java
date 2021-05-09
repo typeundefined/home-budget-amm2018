@@ -20,8 +20,9 @@ public class Category {
     @Length(max = 1024)
     private String description;
 
-    @ManyToOne
-    private Person owner;
+    // TODO stub for Person.class
+    @Column(name = "owner_id")
+    private Long owner;
 
     public Long getId() {
         return id;
@@ -47,11 +48,11 @@ public class Category {
         this.description = description;
     }
 
-    public Person getOwner() {
+    public Long getOwner() {
         return owner;
     }
 
-    public void setOwner(Person owner) {
+    public void setOwner(Long owner) {
         this.owner = owner;
     }
 

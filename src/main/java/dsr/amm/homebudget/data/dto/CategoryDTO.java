@@ -1,16 +1,10 @@
 package dsr.amm.homebudget.data.dto;
 
-import dsr.amm.homebudget.data.entity.Person;
-
 public class CategoryDTO {
-
     private Long id;
-
+    private Long owner;
     private String name;
-
     private String description;
-
-    private Person owner;
 
     public Long getId() {
         return id;
@@ -18,6 +12,14 @@ public class CategoryDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Long owner) {
+        this.owner = owner;
     }
 
     public String getName() {
@@ -34,13 +36,5 @@ public class CategoryDTO {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Person getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Person owner) {
-        this.owner = owner;
     }
 }
